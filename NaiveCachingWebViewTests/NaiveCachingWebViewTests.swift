@@ -7,13 +7,22 @@
 //
 
 import XCTest
+import WebKit
 @testable import NaiveCachingWebView
 
 class NaiveCachingWebViewTests: XCTestCase {
     
+    let dispatchGroup = DispatchGroup()
+    
+    let window = UIWindow(frame: UIScreen.main.bounds)
+    var webView: WKWebView!
+    
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        
+        webView = WKWebView(frame: window.bounds)
+        webView.navigationDelegate = self
+        window.addSubview(webView)
     }
     
     override func tearDown() {
@@ -22,8 +31,14 @@ class NaiveCachingWebViewTests: XCTestCase {
     }
     
     func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+
+        let request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/base-4.9.1.0/docs/Prelude.html#v:map")!)
+        dispatchGroup.enter()
+        _ = webView.cachingLoad(request)
+        while dispatchGroup.wait(timeout: .now()) == .timedOut {
+            RunLoop.main.run(until: Date() + 0.25)
+        }
+
     }
     
     func testPerformanceExample() {
@@ -33,4 +48,15 @@ class NaiveCachingWebViewTests: XCTestCase {
         }
     }
     
+}
+
+extension NaiveCachingWebViewTests: WKNavigationDelegate {
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        print("Finished!")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            let webView = webView
+            self.dispatchGroup.leave()
+        }
+    }
 }
