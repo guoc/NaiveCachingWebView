@@ -30,7 +30,12 @@ public extension WKWebView {
         
     private static let session = URLSession(configuration: .default)
     
-    public func cachingLoad(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil) -> WKNavigation? {
+    public func cachingLoad(_ request: URLRequest) -> WKNavigation? {
+        
+        return cachingLoad(request, with: nil)
+    }
+    
+    public func cachingLoad(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol?) -> WKNavigation? {
         
         guard !isLoading else {
             print("Web view is loading, stop further loadWithCache.")
