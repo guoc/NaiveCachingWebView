@@ -186,8 +186,8 @@ public extension WKWebView {
         
         let linkTagPattern = try! NSRegularExpression(pattern: "<link [^>]*href=\\\"(\\S+)\\\"[^<>]+\\/>")
 
-        let styleTagTemplateGenerator = { (fileName: String, replacedTag: String) -> String in
-            replacedTag.replacingOccurrences(of: "<link", with: "<style")
+        let styleTagTemplateGenerator = { (fileName: String, originalTag: String) -> String in
+            originalTag.replacingOccurrences(of: "<link", with: "<style")
                 .replacingOccurrences(of: "href=\\\"[^\\\"]*\\\"", with: "", options: .regularExpression)
                 .replacingOccurrences(of: "/ *>", with: ">", options: .regularExpression)
                 + "\n%@\n</style>"
@@ -206,8 +206,8 @@ public extension WKWebView {
         
         let scriptTagPairPatternWithoutContent = try! NSRegularExpression(pattern: "<script [^>]*src=\\\"(?!https?:\\/\\/)(\\S+)\\\"[^<>]*>\\s*<\\/script>")
 
-        let scriptTagTemplateGenerator = { (fileName: String, replacedTag: String) -> String in
-            replacedTag.replacingOccurrences(of: "src=\\\"[^\\\"]*\\\"", with: "", options: .regularExpression)
+        let scriptTagTemplateGenerator = { (fileName: String, originalTag: String) -> String in
+            originalTag.replacingOccurrences(of: "src=\\\"[^\\\"]*\\\"", with: "", options: .regularExpression)
                 .replacingOccurrences(of: "</script>", with: "")
                 + "\n%@\n</script>"
         }
@@ -225,7 +225,7 @@ public extension WKWebView {
         
         let urlFunctionalNotationPattern = try! NSRegularExpression(pattern: "url\\(([^:\\s)]+)\\)")
 
-        let base64ImageURLTemplateGenerator = { (fileName: String, replacedTag: String) -> String in
+        let base64ImageURLTemplateGenerator = { (fileName: String, originalTag: String) -> String in
             guard let fileExtension = URL(string: fileName)?.pathExtension else {
                 preconditionFailure("Failed to get \(fileName)'s file extension.")
             }
@@ -250,7 +250,7 @@ public extension WKWebView {
                        , withFileNameCapturingGroup idx: Int
                        , for htmlString: String
                        , baseURL: URL
-                       , newTagTemplateGenerator: @escaping (_ fileName: String, _ replacedTag: String) -> String
+                       , newTagTemplateGenerator: @escaping (_ fileName: String, _ originalTag: String) -> String
                        , rawDataHandler: ((_ rawData: Data) -> String)? = nil)
                        -> String {
         
@@ -266,7 +266,7 @@ public extension WKWebView {
             return (fileName, tag)
         }
         
-        for case (let fileName, let replacedTag) in fileNamesWithTag {
+        for case (let fileName, let originalTag) in fileNamesWithTag {
             
             let baseURL: URL = {
                 if fileName.hasPrefix("/") {
@@ -310,8 +310,8 @@ public extension WKWebView {
                     return
                 }
 
-                guard let replacedTagRange = newHTMLString.range(of: replacedTag) else {
-                    assertionFailure("Failed to find \(replacedTag) in HTML string")
+                guard let originalTagRange = newHTMLString.range(of: originalTag) else {
+                    assertionFailure("Failed to find \(originalTag) in HTML string")
                     return
                 }
     
@@ -325,11 +325,11 @@ public extension WKWebView {
     
                 let resourceContent = rawDataHandler(data)
     
-                let newTagTemplate = newTagTemplateGenerator(fileName, replacedTag)
+                let newTagTemplate = newTagTemplateGenerator(fileName, originalTag)
                 
                 let newTag = String(format: newTagTemplate, resourceContent)
                 
-                newHTMLString = newHTMLString.replacingCharacters(in: replacedTagRange, with: newTag)
+                newHTMLString = newHTMLString.replacingCharacters(in: originalTagRange, with: newTag)
                 
                 dispatchGroup.leave()
                 
