@@ -268,14 +268,25 @@ public extension WKWebView {
         
         for case (let fileName, let replacedTag) in fileNamesWithTag {
             
-            guard let cssLink = URL(string: fileName, relativeTo: baseURL) else {
-                assertionFailure("Failed to get CSS \(fileName)'s link")
+            let baseURL: URL = {
+                if fileName.hasPrefix("/") {
+                    guard let host = baseURL.host, let hostURL = URL(string: host) else {
+                        preconditionFailure("Failed to get host URL from \(baseURL).")
+                    }
+                    return hostURL
+                } else {
+                    return baseURL
+                }
+            }()
+            
+            guard let resourceFileURL = URL(string: fileName, relativeTo: baseURL) else {
+                assertionFailure("Failed to get resource file \(fileName)'s URL.")
                 continue
             }
             
             dispatchGroup.enter()
             
-            WKWebView.session.dataTask(with: cssLink) { (data: Data?, response: URLResponse?, error: Error?) in
+            WKWebView.session.dataTask(with: resourceFileURL) { (data: Data?, response: URLResponse?, error: Error?) in
                 
                 guard error == nil else {
                     assertionFailure("Error: \(error!.localizedDescription)")
