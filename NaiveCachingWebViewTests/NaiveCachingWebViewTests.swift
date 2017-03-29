@@ -7,10 +7,11 @@
 //
 
 import XCTest
+import FBSnapshotTestCase
 import WebKit
 @testable import NaiveCachingWebView
 
-class NaiveCachingWebViewTests: XCTestCase {
+class NaiveCachingWebViewTests: FBSnapshotTestCase {
     
     let dispatchGroup = DispatchGroup()
     
@@ -19,6 +20,8 @@ class NaiveCachingWebViewTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
+        
+        URLCache.shared.removeAllCachedResponses()
         
         webView = WKWebView(frame: window.bounds)
         webView.navigationDelegate = self
@@ -30,15 +33,42 @@ class NaiveCachingWebViewTests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
+// MARK: - Test cachingLoad
+    
+    func testFirstTimeLoading() {
+        
+        let request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/bytedump")!)
 
-        let request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/base-4.9.1.0/docs/Prelude.html#v:map")!)
-        dispatchGroup.enter()
+        _ = webView.load(request)
+        waitWebViewLoadingFinished()
+        let nativeLoadingResult = image(forViewOrLayer: webView)
+
         _ = webView.cachingLoad(request)
-        while dispatchGroup.wait(timeout: .now()) == .timedOut {
-            RunLoop.main.run(until: Date() + 0.25)
-        }
+        waitWebViewLoadingFinished()
+        let cachingLoadingResult = image(forViewOrLayer: webView)
 
+        FBSnapshotCompareReferenceImage(nativeLoadingResult, to: cachingLoadingResult, tolerance: 0)
+    }
+    
+    func testCachingCorrection() {
+        
+        let request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/bytedump")!)
+        
+        _ = webView.load(request)
+        waitWebViewLoadingFinished()
+        let nativeLoadingResult = image(forViewOrLayer: webView)
+        
+        let expectation = self.expectation(description: "Snapshots comparison finished")
+        _ = webView.cachingLoad(request, with: nil, cachingCompletionHanlder: {
+            _ = self.webView.cachingLoad(request) // cachingLoad again to load caches.
+            self.waitWebViewLoadingFinished()
+            let cachingLoadingResult = self.image(forViewOrLayer: self.webView)
+            self.FBSnapshotCompareReferenceImage(nativeLoadingResult, to: cachingLoadingResult, tolerance: 0)
+            expectation.fulfill()
+        })
+        waitWebViewLoadingFinished()
+        
+        wait(for: [expectation], timeout: 100)
     }
     
     func testPerformanceExample() {
@@ -50,12 +80,21 @@ class NaiveCachingWebViewTests: XCTestCase {
     
 }
 
+extension NaiveCachingWebViewTests {
+    
+    func waitWebViewLoadingFinished() {
+        
+        dispatchGroup.enter()
+        while dispatchGroup.wait(timeout: .now()) == .timedOut {
+            RunLoop.main.run(until: Date() + 0.25)
+        }
+    }
+}
+
 extension NaiveCachingWebViewTests: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        print("Finished!")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            let webView = webView
             self.dispatchGroup.leave()
         }
     }

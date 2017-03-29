@@ -17,6 +17,8 @@
 		BD63A7B11E88C37C00250536 /* URL+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD63A7B01E88C37C00250536 /* URL+Extension.swift */; };
 		BD63A7B31E88C39D00250536 /* URLResponse+StringEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD63A7B21E88C39D00250536 /* URLResponse+StringEncoding.swift */; };
 		BD63A7B51E88C3B400250536 /* String+NSRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD63A7B41E88C3B400250536 /* String+NSRange.swift */; };
+		BD63A84D1E8A475200250536 /* FBSnapshotTestCase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD63A84C1E8A475200250536 /* FBSnapshotTestCase.framework */; };
+		BD63A8571E8A7F3900250536 /* FBSnapshotTestCase+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD63A8561E8A7F3900250536 /* FBSnapshotTestCase+Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +45,9 @@
 		BD63A7B01E88C37C00250536 /* URL+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URL+Extension.swift"; sourceTree = "<group>"; };
 		BD63A7B21E88C39D00250536 /* URLResponse+StringEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URLResponse+StringEncoding.swift"; sourceTree = "<group>"; };
 		BD63A7B41E88C3B400250536 /* String+NSRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+NSRange.swift"; sourceTree = "<group>"; };
+		BD63A84C1E8A475200250536 /* FBSnapshotTestCase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSnapshotTestCase.framework; path = Carthage/Build/iOS/FBSnapshotTestCase.framework; sourceTree = "<group>"; };
+		BD63A84F1E8A5B4600250536 /* NaiveCachingWebViewTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NaiveCachingWebViewTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		BD63A8561E8A7F3900250536 /* FBSnapshotTestCase+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FBSnapshotTestCase+Extension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +63,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD63A78E1E88B78600250536 /* NaiveCachingWebView.framework in Frameworks */,
+				BD63A84D1E8A475200250536 /* FBSnapshotTestCase.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +76,7 @@
 				BD63A7861E88B78600250536 /* NaiveCachingWebView */,
 				BD63A7911E88B78600250536 /* NaiveCachingWebViewTests */,
 				BD63A7851E88B78600250536 /* Products */,
+				BD63A84B1E8A475200250536 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -103,8 +110,18 @@
 			children = (
 				BD63A7921E88B78600250536 /* NaiveCachingWebViewTests.swift */,
 				BD63A7941E88B78600250536 /* Info.plist */,
+				BD63A84F1E8A5B4600250536 /* NaiveCachingWebViewTests-Bridging-Header.h */,
+				BD63A8561E8A7F3900250536 /* FBSnapshotTestCase+Extension.swift */,
 			);
 			path = NaiveCachingWebViewTests;
+			sourceTree = "<group>";
+		};
+		BD63A84B1E8A475200250536 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BD63A84C1E8A475200250536 /* FBSnapshotTestCase.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -146,6 +163,7 @@
 				BD63A7891E88B78600250536 /* Sources */,
 				BD63A78A1E88B78600250536 /* Frameworks */,
 				BD63A78B1E88B78600250536 /* Resources */,
+				BD63A84E1E8A475900250536 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -173,6 +191,7 @@
 					};
 					BD63A78C1E88B78600250536 = {
 						CreatedOnToolsVersion = 8.2.1;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -212,6 +231,23 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		BD63A84E1E8A475900250536 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/FBSnapshotTestCase.framework",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		BD63A77F1E88B78600250536 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -232,6 +268,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD63A7931E88B78600250536 /* NaiveCachingWebViewTests.swift in Sources */,
+				BD63A8571E8A7F3900250536 /* FBSnapshotTestCase+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -387,10 +424,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = NaiveCachingWebViewTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = name.guoc.NaiveCachingWebViewTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "NaiveCachingWebViewTests/NaiveCachingWebViewTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -399,10 +443,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = NaiveCachingWebViewTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = name.guoc.NaiveCachingWebViewTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "NaiveCachingWebViewTests/NaiveCachingWebViewTests-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
