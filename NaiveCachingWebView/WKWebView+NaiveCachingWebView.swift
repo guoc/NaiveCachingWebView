@@ -70,7 +70,7 @@ public extension WKWebView {
     private func loadWithCache(for request: URLRequest) -> WKNavigation? {
         
         guard let cachedResponse = URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment) else {
-            print("No cache found for \(url).")
+            print("No cache found for \(String(describing: request.url)).")
             return nil
         }
         
@@ -93,7 +93,7 @@ public extension WKWebView {
     private func cacheInlinedWebPage(for request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol?) {
         
         guard let plainHTMLString = self.plainHTML(for: request) else {
-            assertionFailure("Failed to fetch the plain HTML for \(request.url)")
+            assertionFailure("Failed to fetch the plain HTML for \(String(describing: request.url))")
             return
         }
         
