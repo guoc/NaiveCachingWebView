@@ -185,7 +185,7 @@ public extension WKWebView {
     
     private func stringByInliningStyles(htmlString: String, with baseURL: URL) -> String {
         
-        let linkTagPattern = try! NSRegularExpression(pattern: "<link [^>]*href=\\\"(\\S+)\\\"[^<>]+\\/>")
+        let linkTagPattern = try! NSRegularExpression(pattern: "<link [^>]*href=\\\"(\\S+\\.css)\\\"[^<>]+\\/>")
 
         let styleTagTemplateGenerator = { (fileName: String, originalTag: String) -> String in
             originalTag.replacingOccurrences(of: "<link", with: "<style")
