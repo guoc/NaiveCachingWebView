@@ -174,16 +174,16 @@ public extension WKWebView {
         
         var newHTMLString = plainHTML
         
-        newHTMLString = stringByInliningStyles(htmlString: newHTMLString, with: baseURL)
-        newHTMLString = stringByInliningScripts(htmlString: newHTMLString, with: baseURL)
-        newHTMLString = stringByInliningImages(htmlString: newHTMLString, with: baseURL)
+        newHTMLString = stringByInliningStyles(for: newHTMLString, with: baseURL)
+        newHTMLString = stringByInliningScripts(for: newHTMLString, with: baseURL)
+        newHTMLString = stringByInliningImages(for: newHTMLString, with: baseURL)
         
         print("CSS and JavaScript inlining finished.")
 
         return newHTMLString
     }
     
-    private func stringByInliningStyles(htmlString: String, with baseURL: URL) -> String {
+    private func stringByInliningStyles(for fileContent: String, with baseURL: URL) -> String {
         
         let linkTagPattern = try! NSRegularExpression(pattern: "<link [^>]*href=\\\"(\\S+\\.css)\\\"[^<>]+\\/>")
 
@@ -194,16 +194,16 @@ public extension WKWebView {
                 + "\n%@\n</style>"
         }
         
-        let newHTMLString = replace(tagPattern: linkTagPattern
+        let newFileContent = replace(tagPattern: linkTagPattern
             , withFileNameCapturingGroup: 1
-            , for: htmlString
+            , for: fileContent
             , baseURL: baseURL
             , newTagTemplateGenerator: styleTagTemplateGenerator)
 
-        return newHTMLString
+        return newFileContent
     }
     
-    private func stringByInliningScripts(htmlString: String, with baseURL: URL) -> String {
+    private func stringByInliningScripts(for fileContent: String, with baseURL: URL) -> String {
         
         let scriptTagPairPatternWithoutContent = try! NSRegularExpression(pattern: "<script [^>]*src=\\\"(?!https?:\\/\\/)(\\S+)\\\"[^<>]*>\\s*<\\/script>")
 
@@ -213,16 +213,16 @@ public extension WKWebView {
                 + "\n%@\n</script>"
         }
         
-        let newHTMLString = replace(tagPattern: scriptTagPairPatternWithoutContent
+        let newFileContent = replace(tagPattern: scriptTagPairPatternWithoutContent
             , withFileNameCapturingGroup: 1
-            , for: htmlString
+            , for: fileContent
             , baseURL: baseURL
             , newTagTemplateGenerator: scriptTagTemplateGenerator)
 
-        return newHTMLString
+        return newFileContent
     }
     
-    private func stringByInliningImages(htmlString: String, with baseURL: URL) -> String {
+    private func stringByInliningImages(for fileContent: String, with baseURL: URL) -> String {
         
         let urlFunctionalNotationPattern = try! NSRegularExpression(pattern: "url\\(([^:\\s)]+)\\)")
 
@@ -237,19 +237,19 @@ public extension WKWebView {
             rawData.base64EncodedString(options: .lineLength64Characters).replacingOccurrences(of: "\r\n", with: "")
         }
         
-        let newHTMLString = replace(tagPattern: urlFunctionalNotationPattern
+        let newFileContent = replace(tagPattern: urlFunctionalNotationPattern
             , withFileNameCapturingGroup: 1
-            , for: htmlString
+            , for: fileContent
             , baseURL: baseURL
             , newTagTemplateGenerator: base64ImageURLTemplateGenerator
             , rawDataHandler: imageRawDataHandler)
         
-        return newHTMLString
+        return newFileContent
     }
     
     private func replace(tagPattern: NSRegularExpression
                        , withFileNameCapturingGroup idx: Int
-                       , for htmlString: String
+                       , for fileContent: String
                        , baseURL: URL
                        , newTagTemplateGenerator: @escaping (_ fileName: String, _ originalTag: String) -> String
                        , rawDataHandler: ((_ rawData: Data) -> String)? = nil)
@@ -257,15 +257,18 @@ public extension WKWebView {
         
         let dispatchGroup = DispatchGroup()
         
-        var newHTMLString = htmlString
+        var newFileContent = fileContent.stringByRemovingSlashStarComments
         
-        let htmlStringRange = newHTMLString.nsRange(from: newHTMLString.startIndex..<newHTMLString.endIndex)
+        let range = newFileContent.nsRange(from: newFileContent.startIndex..<newFileContent.endIndex)
         
-        let fileNamesWithTag = tagPattern.matches(in: newHTMLString, options: [], range: htmlStringRange).map { (match) -> (String, String) in
-            let fileName = newHTMLString.substring(with: newHTMLString.range(from: match.rangeAt(idx)))
-            let tag = newHTMLString.substring(with: newHTMLString.range(from: match.range))
+        let fileNamesWithTag = tagPattern.matches(in: newFileContent, options: [], range: range).map { (match) -> (String, String) in
+            let fileName = newFileContent.substring(with: newFileContent.range(from: match.rangeAt(idx)))
+            let tag = newFileContent.substring(with: newFileContent.range(from: match.range))
             return (fileName, tag)
         }
+        
+        // Create local session to avoid block.
+        let session = URLSession(configuration: .default)
         
         for case (let fileName, let originalTag) in fileNamesWithTag {
             
@@ -287,7 +290,7 @@ public extension WKWebView {
             
             dispatchGroup.enter()
             
-            WKWebView.session.dataTask(with: resourceFileURL) { (data: Data?, response: URLResponse?, error: Error?) in
+            session.dataTask(with: resourceFileURL) { (data: Data?, response: URLResponse?, error: Error?) in
                 
                 guard error == nil else {
                     assertionFailure("Error: \(error!.localizedDescription)")
@@ -312,8 +315,8 @@ public extension WKWebView {
                     return
                 }
 
-                guard let originalTagRange = newHTMLString.range(of: originalTag) else {
-                    assertionFailure("Failed to find \(originalTag) in HTML string")
+                guard let originalTagRange = newFileContent.range(of: originalTag) else {
+                    assertionFailure("Failed to find \(originalTag) in the file content.")
                     return
                 }
     
@@ -327,13 +330,13 @@ public extension WKWebView {
     
                 let resourceContent = rawDataHandler(data)
                 
-                let inlinedResourceContent = self.stringByInliningImages(htmlString: resourceContent, with: resourceFileURL.longestBaseURL)
+                let inlinedResourceContent = self.stringByInliningImages(for: resourceContent, with: resourceFileURL.longestBaseURL)
     
                 let newTagTemplate = newTagTemplateGenerator(fileName, originalTag)
                 
                 let newTag = String(format: newTagTemplate, inlinedResourceContent)
                 
-                newHTMLString = newHTMLString.replacingCharacters(in: originalTagRange, with: newTag)
+                newFileContent = newFileContent.replacingCharacters(in: originalTagRange, with: newTag)
                 
                 dispatchGroup.leave()
                 
@@ -342,7 +345,16 @@ public extension WKWebView {
         
         dispatchGroup.wait()
         
-        return newHTMLString
+        return newFileContent
     }
 
+}
+
+private extension String {
+    
+    var stringByRemovingSlashStarComments: String {
+        get {
+            return replacingOccurrences(of: "\\/\\*.*\\*\\/", with: "", options: .regularExpression)
+        }
+    }
 }
