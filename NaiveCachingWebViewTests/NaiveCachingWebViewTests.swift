@@ -68,7 +68,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         })
         waitWebViewLoadingFinished()
         
-        wait(for: [expectation], timeout: 100)
+        wait(for: [expectation], timeout: 10)
     }
     
     func testPerformanceExample() {
