@@ -35,7 +35,7 @@ public extension WKWebView {
         return cachingLoad(request, with: nil)
     }
     
-    public func cachingLoad(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol?) -> WKNavigation? {
+    public func cachingLoad(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol?, cachingCompletionHanlder: (() -> Void)? = nil ) -> WKNavigation? {
         
         guard !isLoading else {
             print("Web view is loading, stop further loadWithCache.")
@@ -62,6 +62,7 @@ public extension WKWebView {
         DispatchQueue.global(qos: .utility).async {
             
             self.cacheInlinedWebPage(for: request, with: htmlProcessors)
+            cachingCompletionHanlder?()
         }
         
         return navigation
