@@ -324,10 +324,12 @@ public extension WKWebView {
                 }
     
                 let resourceContent = rawDataHandler(data)
+                
+                let inlinedResourceContent = self.stringByInliningImages(htmlString: resourceContent, with: resourceFileURL.longestBaseURL)
     
                 let newTagTemplate = newTagTemplateGenerator(fileName, originalTag)
                 
-                let newTag = String(format: newTagTemplate, resourceContent)
+                let newTag = String(format: newTagTemplate, inlinedResourceContent)
                 
                 newHTMLString = newHTMLString.replacingCharacters(in: originalTagRange, with: newTag)
                 
