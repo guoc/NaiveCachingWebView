@@ -300,7 +300,8 @@ public extension WKWebView {
                     return
                 }
                 guard response.statusCode == 200 else {
-                    assertionFailure("Response error: \(HTTPURLResponse.localizedString(forStatusCode: response.statusCode))")
+                    print("Response error: \(HTTPURLResponse.localizedString(forStatusCode: response.statusCode))")
+                    print("Failed to fetch resource file: \(resourceFileURL) ...")
                     dispatchGroup.leave()
                     return
                 }
