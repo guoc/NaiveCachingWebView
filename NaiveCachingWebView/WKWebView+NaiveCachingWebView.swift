@@ -270,7 +270,7 @@ public extension WKWebView {
             
             let baseURL: URL = {
                 if fileName.hasPrefix("/") {
-                    guard let host = baseURL.host, let hostURL = URL(string: host) else {
+                    guard let host = baseURL.host, let hostURL = URL(string: "https://\(host)") else {
                         preconditionFailure("Failed to get host URL from \(baseURL).")
                     }
                     return hostURL
