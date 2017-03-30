@@ -9,14 +9,7 @@
 import Foundation
 
 extension URL {
-    
-    var longestBaseURL: URL {
-        guard let match = absoluteString.range(of: "^https?:\\/\\/(\\S+\\/)*", options: .regularExpression) else {
-            preconditionFailure("Unexpected URL: \(self)")
-        }
-        return URL(string: absoluteString.substring(with: match))!
-    }
-    
+        
     var urlByRemovingFragment: URL {
         guard let fragment = fragment else {
             return self

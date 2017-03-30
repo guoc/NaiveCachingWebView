@@ -104,7 +104,7 @@ public extension WKWebView {
             assertionFailure("Expected non-nil URL in request \(request).")
             return
         }
-        let baseURL = url.longestBaseURL
+        let baseURL = url.deletingLastPathComponent()
         
         let inlinedHTMLString = self.inlineResources(for: preprocessedHTMLString, with: baseURL)
         
@@ -330,7 +330,7 @@ public extension WKWebView {
     
                 let resourceContent = rawDataHandler(data)
                 
-                let inlinedResourceContent = self.stringByInliningImages(for: resourceContent, with: resourceFileURL.longestBaseURL)
+                let inlinedResourceContent = self.stringByInliningImages(for: resourceContent, with: resourceFileURL.deletingLastPathComponent())
     
                 let newTagTemplate = newTagTemplateGenerator(fileName, originalTag)
                 
