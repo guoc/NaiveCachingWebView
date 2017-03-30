@@ -13,6 +13,33 @@ import WebKit
 
 class NaiveCachingWebViewTests: FBSnapshotTestCase {
     
+    private static let userAgent: String = {
+        
+        var userAgent: String!
+        
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        let webView = WKWebView(frame: window.bounds)
+        window.addSubview(webView)
+        
+        let dispatchGroup = DispatchGroup()
+        dispatchGroup.enter()
+        webView.evaluateJavaScript("navigator.userAgent") { (result: Any?, error: Error?) in
+            guard error == nil else {
+                preconditionFailure(error!.localizedDescription)
+            }
+            guard let result = result as? String else {
+                preconditionFailure("Failed to get user agent.")
+            }
+            userAgent = result
+            dispatchGroup.leave()
+        }
+        while dispatchGroup.wait(timeout: .now()) == .timedOut {
+            RunLoop.main.run(until: Date() + 0.25)
+        }
+        
+        return userAgent
+    }()
+    
     let dispatchGroup = DispatchGroup()
     
     let window = UIWindow(frame: UIScreen.main.bounds)
@@ -37,8 +64,9 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
     
     func testFirstTimeLoading() {
         
-        let request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/bytedump")!)
-
+        var request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/bytedump")!)
+        request.setValue(NaiveCachingWebViewTests.userAgent, forHTTPHeaderField: "User-Agent")
+        
         _ = webView.load(request)
         waitWebViewLoadingFinished()
         let nativeLoadingResult = image(forViewOrLayer: webView)
@@ -52,7 +80,8 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
     
     func testCachingCorrection() {
         
-        let request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/bytedump")!)
+        var request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/bytedump")!)
+        request.setValue(NaiveCachingWebViewTests.userAgent, forHTTPHeaderField: "User-Agent")
         
         _ = webView.load(request)
         waitWebViewLoadingFinished()
@@ -69,13 +98,6 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         waitWebViewLoadingFinished()
         
         wait(for: [expectation], timeout: 10)
-    }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
     }
     
 }
