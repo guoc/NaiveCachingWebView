@@ -68,6 +68,34 @@ public extension WKWebView {
         return navigation
     }
     
+    private static let userAgent: String = {
+        
+        var userAgent: String!
+        
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        let webView = WKWebView(frame: window.bounds)
+        window.addSubview(webView)
+        
+        let dispatchGroup = DispatchGroup()
+        dispatchGroup.enter()
+        webView.evaluateJavaScript("navigator.userAgent") { (result: Any?, error: Error?) in
+            guard error == nil else {
+                preconditionFailure(error!.localizedDescription)
+            }
+            guard let result = result as? String else {
+                preconditionFailure("Failed to get user agent.")
+            }
+            userAgent = result
+            dispatchGroup.leave()
+        }
+        while dispatchGroup.wait(timeout: .now()) == .timedOut {
+            RunLoop.main.run(until: Date() + 0.25)
+        }
+        
+        return userAgent
+    }()
+
+    
     private func loadWithCache(for request: URLRequest) -> WKNavigation? {
         
         guard let cachedResponse = URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment) else {
@@ -93,6 +121,12 @@ public extension WKWebView {
     
     private func cacheInlinedWebPage(for request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol?) {
         
+        let request: URLRequest = {
+            var request = request
+            request.setValue(WKWebView.userAgent, forHTTPHeaderField: "User-Agent")
+            return request
+        }()
+
         guard let plainHTMLString = self.plainHTML(for: request) else {
             assertionFailure("Failed to fetch the plain HTML for \(String(describing: request.url))")
             return
