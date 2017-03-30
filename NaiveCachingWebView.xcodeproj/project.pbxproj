@@ -19,6 +19,7 @@
 		BD63A7B51E88C3B400250536 /* String+NSRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD63A7B41E88C3B400250536 /* String+NSRange.swift */; };
 		BD63A84D1E8A475200250536 /* FBSnapshotTestCase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD63A84C1E8A475200250536 /* FBSnapshotTestCase.framework */; };
 		BD63A8571E8A7F3900250536 /* FBSnapshotTestCase+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD63A8561E8A7F3900250536 /* FBSnapshotTestCase+Extension.swift */; };
+		BD8DACBC1E8D072200E285DC /* test-links.txt in Resources */ = {isa = PBXBuildFile; fileRef = BD8DACBB1E8D072200E285DC /* test-links.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,7 @@
 		BD63A84C1E8A475200250536 /* FBSnapshotTestCase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSnapshotTestCase.framework; path = Carthage/Build/iOS/FBSnapshotTestCase.framework; sourceTree = "<group>"; };
 		BD63A84F1E8A5B4600250536 /* NaiveCachingWebViewTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NaiveCachingWebViewTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		BD63A8561E8A7F3900250536 /* FBSnapshotTestCase+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FBSnapshotTestCase+Extension.swift"; sourceTree = "<group>"; };
+		BD8DACBB1E8D072200E285DC /* test-links.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "test-links.txt"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +114,7 @@
 				BD63A7941E88B78600250536 /* Info.plist */,
 				BD63A84F1E8A5B4600250536 /* NaiveCachingWebViewTests-Bridging-Header.h */,
 				BD63A8561E8A7F3900250536 /* FBSnapshotTestCase+Extension.swift */,
+				BD8DACBB1E8D072200E285DC /* test-links.txt */,
 			);
 			path = NaiveCachingWebViewTests;
 			sourceTree = "<group>";
@@ -226,6 +229,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD8DACBC1E8D072200E285DC /* test-links.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
