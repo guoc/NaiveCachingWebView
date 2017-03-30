@@ -299,7 +299,8 @@ public extension WKWebView {
                        , baseURL: URL
                        , newTagTemplateGenerator: @escaping (_ fileName: String, _ originalTag: String) -> String
                        , rawDataHandler: ((_ rawData: Data) -> String)? = nil)
-                       -> String {
+                       -> String
+    {
         
         let dispatchGroup = DispatchGroup()
         
@@ -312,11 +313,13 @@ public extension WKWebView {
             let tag = newFileContent.substring(with: newFileContent.range(from: match.range))
             return (fileName, tag)
         }
-                        
-                        print(fileNamesWithTag)
-        
+
         // Create local session to avoid block.
         let session = URLSession(configuration: .default)
+        
+        defer {
+            session.finishTasksAndInvalidate()
+        }
         
         for case (let fileName, let originalTag) in fileNamesWithTag {
             
@@ -392,7 +395,7 @@ public extension WKWebView {
         }
         
         dispatchGroup.wait()
-        
+
         return newFileContent
     }
 
