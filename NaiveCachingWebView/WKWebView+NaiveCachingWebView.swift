@@ -128,7 +128,7 @@ public extension WKWebView {
             return request
         }()
 
-        guard let plainHTMLString = self.plainHTML(for: request) else {
+        guard let plainHTMLString = plainHTML(for: request) else {
             assertionFailure("Failed to fetch the plain HTML for \(String(describing: request.url))")
             return
         }
@@ -141,7 +141,7 @@ public extension WKWebView {
         }
         let baseURL = url.deletingLastPathComponent()
         
-        let inlinedHTMLString = self.inlineResources(for: preprocessedHTMLString, with: baseURL)
+        let inlinedHTMLString = inlineResources(for: preprocessedHTMLString, with: baseURL)
         
         let postprocessedHTMLString = htmlProcessors?.postprocessor?(inlinedHTMLString) ?? inlinedHTMLString
         
@@ -188,16 +188,14 @@ public extension WKWebView {
                 return
             }
             
-            guard let response = response as? HTTPURLResponse else {
-                assertionFailure("Expected a response with HTTPURLResponse type.")
-                htmlDispatchGroup.leave()
-                return
-            }
-            
-            guard response.statusCode == 200 else {
-                assertionFailure("Response error: \(response.statusCode)(\(HTTPURLResponse.localizedString(forStatusCode: response.statusCode))).")
-                htmlDispatchGroup.leave()
-                return
+            if let response = response as? HTTPURLResponse {
+                if response.statusCode != 200 {
+                    assertionFailure("Response error: \(response.statusCode)(\(HTTPURLResponse.localizedString(forStatusCode: response.statusCode))).")
+                    htmlDispatchGroup.leave()
+                    return
+                }
+            } else {
+                print("The response is not HTTPURLResponse type.")
             }
             
             guard let data = data else {
@@ -206,8 +204,7 @@ public extension WKWebView {
                 return
             }
             
-            let encoding = String.Encoding.isoLatin1
-            print(encoding)
+            let encoding = response?.stringEncoding ?? String.Encoding.isoLatin1
             htmlString = String(data: data, encoding: encoding)
             
             htmlDispatchGroup.leave()
