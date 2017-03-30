@@ -7,6 +7,12 @@
 
 @interface FBSnapshotTestController (Private)
 
+- (BOOL)saveFailedReferenceImage:(UIImage *)referenceImage
+                       testImage:(UIImage *)testImage
+                        selector:(SEL)selector
+                      identifier:(NSString *)identifier
+                           error:(NSError **)errorPtr;
+
 - (UIImage *)_imageForViewOrLayer:(id)viewOrLayer;
 
 @end
