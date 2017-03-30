@@ -110,6 +110,20 @@ public extension WKWebView {
         
         let postprocessedHTMLString = htmlProcessors?.postprocessor?(inlinedHTMLString) ?? inlinedHTMLString
         
+#if SAVE_INLINED_PAGE_FOR_TESTING
+        let targetPath = FileManager.default.temporaryDirectory
+            .appendingPathComponent("NaiveCachingWebView", isDirectory: true)
+            .appendingPathComponent("InlinedPages", isDirectory: true)
+            .appendingPathComponent(url.absoluteString.replacingOccurrences(of: "^https?:\\/\\/", with: "", options: .regularExpression) + ".html")
+        do {
+            try FileManager.default.createDirectory(at: targetPath.deletingLastPathComponent(), withIntermediateDirectories: true)
+            print("Try to save inlined page file to \(targetPath)")
+            try postprocessedHTMLString.write(to: targetPath, atomically: true, encoding: .utf8)
+        } catch {
+            assertionFailure("Failed to save inlined page file.")
+        }
+#endif
+        
         let newCachedResponse: CachedURLResponse = {
             let response = URLResponse(url: url, mimeType: "text/html", expectedContentLength: postprocessedHTMLString.characters.count, textEncodingName: "UTF-8")
             guard let data = postprocessedHTMLString.data(using: .utf8) else {
@@ -157,8 +171,8 @@ public extension WKWebView {
                 return
             }
             
-            let encoding = response.stringEncoding ?? .utf8
-            
+            let encoding = String.Encoding.isoLatin1
+            print(encoding)
             htmlString = String(data: data, encoding: encoding)
             
             htmlDispatchGroup.leave()
@@ -266,6 +280,8 @@ public extension WKWebView {
             let tag = newFileContent.substring(with: newFileContent.range(from: match.range))
             return (fileName, tag)
         }
+                        
+                        print(fileNamesWithTag)
         
         // Create local session to avoid block.
         let session = URLSession(configuration: .default)
