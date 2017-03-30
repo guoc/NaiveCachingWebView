@@ -204,7 +204,7 @@ public extension WKWebView {
                 return
             }
             
-            let encoding = response?.stringEncoding ?? String.Encoding.isoLatin1
+            let encoding = response?.stringEncoding ?? .utf8
             htmlString = String(data: data, encoding: encoding)
             
             htmlDispatchGroup.leave()
