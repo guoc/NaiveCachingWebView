@@ -52,6 +52,7 @@ public extension WKWebView {
         }
 
         if let navigation = loadWithCache(for: request) {
+            cachingCompletionHanlder?()
             return navigation
         }
         
