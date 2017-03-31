@@ -52,7 +52,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
 //        let request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/bytedump")!)
         
         for (index, link) in NaiveCachingWebViewTests.testLinks.enumerated() {
-            
+
             autoreleasepool {
                 
                 print("Testing \(index) ...")
@@ -65,7 +65,11 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
                 
                 let cachingLoadingResult = syncCachingLoad(request: request)
                 
-                FBSnapshotCompareReferenceImage(nativeLoadingResult, to: cachingLoadingResult, tolerance: 0)
+                let identifier = link
+                    .replacingOccurrences(of: "https?:\\/\\/", with: "", options: .regularExpression)
+                    .replacingOccurrences(of: "/", with: "-")
+                
+                FBSnapshotCompareReferenceImage(nativeLoadingResult, to: cachingLoadingResult, tolerance: 0, identifier: identifier)
             }
         }
     }

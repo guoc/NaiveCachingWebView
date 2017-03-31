@@ -19,6 +19,7 @@ public extension FBSnapshotTestCase {
         } catch let error {
             try! snapshotTestController?.saveFailedReferenceImage(referenceImage, test: image, selector: invocation?.selector, identifier: identifier ?? "")
             XCTFail("Snapshot comparison failed: \(error)", file: #file, line: #line)
+            preconditionFailure() // To make sure exit once fail in loop.
         }
     }
     
