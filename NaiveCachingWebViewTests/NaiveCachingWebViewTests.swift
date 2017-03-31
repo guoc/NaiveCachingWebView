@@ -69,10 +69,11 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
                     .replacingOccurrences(of: "https?:\\/\\/", with: "", options: .regularExpression)
                     .replacingOccurrences(of: "/", with: "-")
                 
-                FBSnapshotCompareReferenceImage(nativeLoadingResult, to: cachingLoadingResult, tolerance: 0, identifier: identifier)
+                FBSnapshotCompareReferenceImage(nativeLoadingResult, to: cachingLoadingResult, tolerance: 0.01, identifier: identifier)
             }
         }
     }
+    
     
     private class NavigationDelegate: NSObject, WKNavigationDelegate {
         
@@ -83,7 +84,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         }
         
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                 self.dispatchGroup.leave()
             }
         }
