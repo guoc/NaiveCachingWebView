@@ -35,7 +35,7 @@ public extension WKWebView {
         return cachingLoad(request, with: nil)
     }
     
-    public func cachingLoad(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol?, cachingCompletionHanlder: (() -> Void)? = nil ) -> WKNavigation? {
+    public func cachingLoad(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHanlder: (() -> Void)? = nil) -> WKNavigation? {
         
         guard !isLoading else {
             print("Web view is loading, stop further loadWithCache.")
@@ -60,15 +60,25 @@ public extension WKWebView {
         
         let navigation = load(request)
         
+        cache(request, with: htmlProcessors, cachingCompletionHanlder: cachingCompletionHanlder)
+
+        return navigation
+    }
+
+    public func hasCached(for request: URLRequest) -> Bool {
+
+        return URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment) != nil
+    }
+
+    public func cache(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHanlder: (() -> Void)? = nil) {
+
         DispatchQueue.global(qos: .utility).async {
-            
+
             self.cacheInlinedWebPage(for: request, with: htmlProcessors)
             cachingCompletionHanlder?()
         }
-        
-        return navigation
     }
-    
+
     private static let userAgent: String = {
         
         var userAgent: String!
@@ -98,10 +108,14 @@ public extension WKWebView {
 
     
     private func loadWithCache(for request: URLRequest) -> WKNavigation? {
-        
-        guard let cachedResponse = URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment) else {
+
+        guard hasCached(for: request) else {
             print("No cache found for \(String(describing: request.url)).")
             return nil
+        }
+        
+        guard let cachedResponse = URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment) else {
+            preconditionFailure("hasCached(for:) return true but no cache found for \(String(describing: request.url)).")
         }
         
         let response = cachedResponse.response
