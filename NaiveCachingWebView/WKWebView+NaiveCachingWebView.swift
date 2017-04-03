@@ -136,13 +136,13 @@ public extension WKWebView {
     
     private func cacheInlinedWebPage(for request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol?) {
         
-        let request: URLRequest = {
+        let requestWithUserAgentSet: URLRequest = {
             var request = request
             request.setValue(WKWebView.userAgent, forHTTPHeaderField: "User-Agent")
             return request
         }()
 
-        guard let plainHTMLString = plainHTML(for: request) else {
+        guard let plainHTMLString = plainHTML(for: requestWithUserAgentSet) else {
             assertionFailure("Failed to fetch the plain HTML for \(String(describing: request.url))")
             return
         }
