@@ -65,7 +65,7 @@ public extension WKWebView {
         return navigation
     }
 
-    public func hasCached(for request: URLRequest) -> Bool {
+    public class func hasCached(for request: URLRequest) -> Bool {
 
         return URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment) != nil
     }
@@ -109,7 +109,7 @@ public extension WKWebView {
     
     private func loadWithCache(for request: URLRequest) -> WKNavigation? {
 
-        guard hasCached(for: request) else {
+        guard WKWebView.hasCached(for: request) else {
             print("No cache found for \(String(describing: request.url)).")
             return nil
         }
