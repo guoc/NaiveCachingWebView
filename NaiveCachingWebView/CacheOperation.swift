@@ -14,13 +14,11 @@ class CacheOperation: Operation {
     private var _executing = false
     private var _finished = false
 
-    private let webView: WKWebView
     private let request: URLRequest
     private let htmlProcessors: HTMLProcessorsProtocol?
     private let cachingCompletionHandler: (() -> Void)?
 
-    init(_ webView: WKWebView, request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) {
-        self.webView = webView
+    init(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) {
         self.request = request
         self.htmlProcessors = htmlProcessors
         self.cachingCompletionHandler = cachingCompletionHandler
@@ -56,6 +54,7 @@ class CacheOperation: Operation {
     override func start() {
         if isCancelled {
             isFinished = true
+            isExecuting = false
             return
         }
 
@@ -63,7 +62,96 @@ class CacheOperation: Operation {
 
         DispatchQueue.global(qos: .utility).async {
 
-            self.webView.cacheInlinedWebPage(for: self.request, with: self.htmlProcessors)
+            let requestWithUserAgentSet: URLRequest = {
+                var request = self.request
+                request.setValue(WKWebView.userAgent, forHTTPHeaderField: "User-Agent")
+                return request
+            }()
+
+            if self.isCancelled {
+                self.isFinished = true
+                self.isExecuting = false
+                return
+            }
+
+            guard let plainHTMLString = WKWebView.plainHTML(for: requestWithUserAgentSet) else {
+                assertionFailure("Failed to fetch the plain HTML for \(String(describing: self.request.url))")
+                return
+            }
+
+            if self.isCancelled {
+                self.isFinished = true
+                self.isExecuting = false
+                return
+            }
+
+            let preprocessedHTMLString = self.htmlProcessors?.preprocessor?(plainHTMLString) ?? plainHTMLString
+
+            guard let url = self.request.url else {
+                assertionFailure("Expected non-nil URL in request \(self.request).")
+                return
+            }
+            let baseURL = url.deletingLastPathComponent()
+
+            let inlinedHTMLString = WKWebView.inlineResources(for: preprocessedHTMLString, with: baseURL)
+
+            if self.isCancelled {
+                self.isFinished = true
+                self.isExecuting = false
+                return
+            }
+
+            let postprocessedHTMLString = self.htmlProcessors?.postprocessor?(inlinedHTMLString) ?? inlinedHTMLString
+
+            if self.isCancelled {
+                self.isFinished = true
+                self.isExecuting = false
+                return
+            }
+
+            #if SAVE_INLINED_PAGE_FOR_TESTING
+                let targetPath = FileManager.default.temporaryDirectory
+                    .appendingPathComponent("NaiveCachingWebView", isDirectory: true)
+                    .appendingPathComponent("InlinedPages", isDirectory: true)
+                    .appendingPathComponent(url.absoluteString.replacingOccurrences(of: "^https?:\\/\\/", with: "", options: .regularExpression) + ".html")
+                do {
+                    try FileManager.default.createDirectory(at: targetPath.deletingLastPathComponent(), withIntermediateDirectories: true)
+                    print("Try to save inlined page file to \(targetPath)")
+                    try postprocessedHTMLString.write(to: targetPath, atomically: true, encoding: .utf8)
+                } catch {
+                    assertionFailure("Failed to save inlined page file.")
+                }
+                if self.isCancelled {
+                    self.isFinished = true
+                    self.isExecuting = false
+                    return
+                }
+            #endif
+
+            let newCachedResponse: CachedURLResponse = {
+                let response = URLResponse(url: url, mimeType: "text/html", expectedContentLength: postprocessedHTMLString.characters.count, textEncodingName: "UTF-8")
+                guard let data = postprocessedHTMLString.data(using: .utf8) else {
+                    preconditionFailure("Failed to convert HTML string to data.")
+                }
+                return CachedURLResponse(response: response, data: data)
+            }()
+
+            if self.isCancelled {
+                self.isFinished = true
+                self.isExecuting = false
+                return
+            }
+
+            URLCache.shared.storeCachedResponse(newCachedResponse, for: self.request.requestByRemovingURLFragment)
+            
+            print("Cache stored for \(self.request.requestByRemovingURLFragment.url?.absoluteString ?? "nil url").")
+
+            if self.isCancelled {
+                self.isFinished = true
+                self.isExecuting = false
+                return
+            }
+
             self.cachingCompletionHandler?()
         }
     }

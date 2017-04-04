@@ -158,11 +158,10 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
 
     private func syncCache(request: URLRequest) {
 
-        let webView = WKWebView()
         let dispatchGroup = DispatchGroup()
 
         dispatchGroup.enter()
-        webView.cache(request) {
+        WKWebView.cache(request) {
             dispatchGroup.leave()
         }
 

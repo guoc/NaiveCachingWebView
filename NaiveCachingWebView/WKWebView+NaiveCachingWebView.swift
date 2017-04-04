@@ -60,7 +60,7 @@ public extension WKWebView {
         
         let navigation = load(request)
         
-        cache(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
+        WKWebView.cache(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
 
         return navigation
     }
@@ -70,14 +70,14 @@ public extension WKWebView {
         return URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment) != nil
     }
 
-    @discardableResult public func cache(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) -> Operation {
+    @discardableResult public class func cache(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) -> Operation {
 
-        let cacheOperation = CacheOperation(self, request: request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
+        let cacheOperation = CacheOperation(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
         cacheOperation.start()
         return cacheOperation
     }
 
-    private static let userAgent: String = {
+    static let userAgent: String = {
         
         var userAgent: String!
         
@@ -131,60 +131,8 @@ public extension WKWebView {
         
         return navigation
     }
-    
-    func cacheInlinedWebPage(for request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol?) {
-        
-        let requestWithUserAgentSet: URLRequest = {
-            var request = request
-            request.setValue(WKWebView.userAgent, forHTTPHeaderField: "User-Agent")
-            return request
-        }()
 
-        guard let plainHTMLString = plainHTML(for: requestWithUserAgentSet) else {
-            assertionFailure("Failed to fetch the plain HTML for \(String(describing: request.url))")
-            return
-        }
-        
-        let preprocessedHTMLString = htmlProcessors?.preprocessor?(plainHTMLString) ?? plainHTMLString
-        
-        guard let url = request.url else {
-            assertionFailure("Expected non-nil URL in request \(request).")
-            return
-        }
-        let baseURL = url.deletingLastPathComponent()
-        
-        let inlinedHTMLString = inlineResources(for: preprocessedHTMLString, with: baseURL)
-        
-        let postprocessedHTMLString = htmlProcessors?.postprocessor?(inlinedHTMLString) ?? inlinedHTMLString
-        
-#if SAVE_INLINED_PAGE_FOR_TESTING
-        let targetPath = FileManager.default.temporaryDirectory
-            .appendingPathComponent("NaiveCachingWebView", isDirectory: true)
-            .appendingPathComponent("InlinedPages", isDirectory: true)
-            .appendingPathComponent(url.absoluteString.replacingOccurrences(of: "^https?:\\/\\/", with: "", options: .regularExpression) + ".html")
-        do {
-            try FileManager.default.createDirectory(at: targetPath.deletingLastPathComponent(), withIntermediateDirectories: true)
-            print("Try to save inlined page file to \(targetPath)")
-            try postprocessedHTMLString.write(to: targetPath, atomically: true, encoding: .utf8)
-        } catch {
-            assertionFailure("Failed to save inlined page file.")
-        }
-#endif
-        
-        let newCachedResponse: CachedURLResponse = {
-            let response = URLResponse(url: url, mimeType: "text/html", expectedContentLength: postprocessedHTMLString.characters.count, textEncodingName: "UTF-8")
-            guard let data = postprocessedHTMLString.data(using: .utf8) else {
-                preconditionFailure("Failed to convert HTML string to data.")
-            }
-            return CachedURLResponse(response: response, data: data)
-        }()
-        
-        URLCache.shared.storeCachedResponse(newCachedResponse, for: request.requestByRemovingURLFragment)
-        
-        print("Cache stored for \(request.requestByRemovingURLFragment.url?.absoluteString ?? "nil url").")
-    }
-
-    private func plainHTML(for request: URLRequest) -> String? {
+    class func plainHTML(for request: URLRequest) -> String? {
         
         let htmlDispatchGroup = DispatchGroup()
         
@@ -228,20 +176,20 @@ public extension WKWebView {
         return htmlString
     }
     
-    private func inlineResources(for plainHTML: String, with baseURL: URL) -> String {
+    class func inlineResources(for plainHTML: String, with baseURL: URL) -> String {
         
         var newHTMLString = plainHTML
         
-        newHTMLString = stringByInliningStyles(for: newHTMLString, with: baseURL)
-        newHTMLString = stringByInliningScripts(for: newHTMLString, with: baseURL)
-        newHTMLString = stringByInliningImages(for: newHTMLString, with: baseURL)
+        newHTMLString = WKWebView.stringByInliningStyles(for: newHTMLString, with: baseURL)
+        newHTMLString = WKWebView.stringByInliningScripts(for: newHTMLString, with: baseURL)
+        newHTMLString = WKWebView.stringByInliningImages(for: newHTMLString, with: baseURL)
         
         print("CSS and JavaScript inlining finished.")
 
         return newHTMLString
     }
     
-    private func stringByInliningStyles(for fileContent: String, with baseURL: URL) -> String {
+    private class func stringByInliningStyles(for fileContent: String, with baseURL: URL) -> String {
         
         let linkTagPattern = try! NSRegularExpression(pattern: "<link [^>]*href=\\\"(\\S+\\.css)\\\"[^<>]+\\/>")
 
@@ -261,7 +209,7 @@ public extension WKWebView {
         return newFileContent
     }
     
-    private func stringByInliningScripts(for fileContent: String, with baseURL: URL) -> String {
+    private class func stringByInliningScripts(for fileContent: String, with baseURL: URL) -> String {
         
         let scriptTagPairPatternWithoutContent = try! NSRegularExpression(pattern: "<script [^>]*src=\\\"(?!https?:\\/\\/)(\\S+)\\\"[^<>]*>\\s*<\\/script>")
 
@@ -271,7 +219,7 @@ public extension WKWebView {
                 + "\n%@\n</script>"
         }
         
-        let newFileContent = replace(tagPattern: scriptTagPairPatternWithoutContent
+        let newFileContent = WKWebView.replace(tagPattern: scriptTagPairPatternWithoutContent
             , withFileNameCapturingGroup: 1
             , for: fileContent
             , baseURL: baseURL
@@ -280,7 +228,7 @@ public extension WKWebView {
         return newFileContent
     }
     
-    private func stringByInliningImages(for fileContent: String, with baseURL: URL) -> String {
+    private class func stringByInliningImages(for fileContent: String, with baseURL: URL) -> String {
         
         let urlFunctionalNotationPattern = try! NSRegularExpression(pattern: "url\\(([^:\\s)]+)\\)")
 
@@ -295,7 +243,7 @@ public extension WKWebView {
             rawData.base64EncodedString(options: .lineLength64Characters).replacingOccurrences(of: "\r\n", with: "")
         }
         
-        let newFileContent = replace(tagPattern: urlFunctionalNotationPattern
+        let newFileContent = WKWebView.replace(tagPattern: urlFunctionalNotationPattern
             , withFileNameCapturingGroup: 1
             , for: fileContent
             , baseURL: baseURL
@@ -305,7 +253,7 @@ public extension WKWebView {
         return newFileContent
     }
     
-    private func replace(tagPattern: NSRegularExpression
+    private class func replace(tagPattern: NSRegularExpression
                        , withFileNameCapturingGroup idx: Int
                        , for fileContent: String
                        , baseURL: URL
