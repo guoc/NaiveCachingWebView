@@ -65,6 +65,24 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         XCTAssert(WKWebView.hasCached(for: request))
     }
 
+// MARK: - Test cancel cache operation
+
+    func testCancelCacheOperation() {
+
+        let request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/bytedump")!)
+        let cacheOperation = WKWebView.cache(request, with: nil) {
+            print("Cache finished")
+        }
+        RunLoop.current.run(until: Date() + TimeInterval(arc4random_uniform(10)))
+        cacheOperation.cancel()
+        while true {
+            RunLoop.current.run(until: Date() + 0.25)
+            if cacheOperation.isFinished && !cacheOperation.isExecuting {
+                return
+            }
+        }
+    }
+
 // MARK: - Test caching correction
 
     func testCachingCorrection() {

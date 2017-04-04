@@ -168,6 +168,9 @@ class CacheOperation: Operation {
             }
 
             self.cachingCompletionHandler?()
+
+            self.isExecuting = false
+            self.isFinished = true
         }
     }
 
