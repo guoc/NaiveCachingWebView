@@ -47,16 +47,26 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         FBSnapshotCompareReferenceImage(nativeLoadingResult, to: cachingLoadingResult, tolerance: 0)
     }
 
+// MARK: - Test user agent
+
+    func testUserAgent() {
+
+        let userAgent = WKWebView.userAgent
+        print(userAgent)
+        XCTAssert(!userAgent.isEmpty)
+    }
+
+// MARK: - Test hasCached
+
     func testHasCached() {
 
         let request = URLRequest(url: URL(string: "https://www.google.com")!)
         syncCache(request: request)
         XCTAssert(WKWebView.hasCached(for: request))
-
-        syncLoad(request: request)
-        XCTAssert(WKWebView.hasCached(for: request))
     }
-    
+
+// MARK: - Test caching correction
+
     func testCachingCorrection() {
         
 //        let request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/bytedump")!)
@@ -83,7 +93,8 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
             }
         }
     }
-    
+
+// MARK: - Helpers
     
     private class NavigationDelegate: NSObject, WKNavigationDelegate {
         
@@ -113,7 +124,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         _ = webView.load(request)
         
         while dispatchGroup.wait(timeout: .now()) == .timedOut {
-            RunLoop.main.run(until: Date() + 0.25)
+            RunLoop.current.run(until: Date() + 0.25)
         }
         
         guard let snapshot = image(forViewOrLayer: webView) else {
@@ -142,7 +153,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         }
         
         while dispatchGroup.wait(timeout: .now()) == .timedOut {
-            RunLoop.main.run(until: Date() + 0.25)
+            RunLoop.current.run(until: Date() + 0.25)
         }
         
         guard let snapshot = image(forViewOrLayer: webView) else {
@@ -166,7 +177,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         }
 
         while dispatchGroup.wait(timeout: .now()) == .timedOut {
-            RunLoop.main.run(until: Date() + 0.25)
+            RunLoop.current.run(until: Date() + 0.25)
         }
     }
 }

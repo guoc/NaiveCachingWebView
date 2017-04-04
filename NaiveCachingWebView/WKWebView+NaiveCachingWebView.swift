@@ -79,9 +79,7 @@ public extension WKWebView {
         
         var userAgent: String!
         
-        let window = UIWindow(frame: UIScreen.main.bounds)
-        let webView = WKWebView(frame: window.bounds)
-        window.addSubview(webView)
+        let webView = WKWebView(frame: .zero)
         
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
@@ -96,7 +94,7 @@ public extension WKWebView {
             dispatchGroup.leave()
         }
         while dispatchGroup.wait(timeout: .now()) == .timedOut {
-            RunLoop.main.run(until: Date() + 0.25)
+            RunLoop.current.run(until: Date() + 0.25)
         }
         
         return userAgent

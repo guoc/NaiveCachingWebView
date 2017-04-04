@@ -53,6 +53,7 @@ class CacheOperation: Operation {
 
     override func start() {
         if isCancelled {
+            testingPrint(after: "starting start function")
             isFinished = true
             isExecuting = false
             return
