@@ -46,6 +46,16 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
 
         FBSnapshotCompareReferenceImage(nativeLoadingResult, to: cachingLoadingResult, tolerance: 0)
     }
+
+    func testHasCached() {
+
+        let request = URLRequest(url: URL(string: "https://www.google.com")!)
+        syncCache(request: request)
+        XCTAssert(WKWebView.hasCached(for: request))
+
+        syncLoad(request: request)
+        XCTAssert(WKWebView.hasCached(for: request))
+    }
     
     func testCachingCorrection() {
         
@@ -90,7 +100,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         }
     }
 
-    private func syncLoad(request: URLRequest) -> UIImage {
+    @discardableResult func syncLoad(request: URLRequest) -> UIImage {
         
         let webView = WKWebView(frame: window.bounds)
         let dispatchGroup = DispatchGroup()
@@ -144,5 +154,20 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         
         return snapshot
 
+    }
+
+    private func syncCache(request: URLRequest) {
+
+        let webView = WKWebView()
+        let dispatchGroup = DispatchGroup()
+
+        dispatchGroup.enter()
+        webView.cache(request) {
+            dispatchGroup.leave()
+        }
+
+        while dispatchGroup.wait(timeout: .now()) == .timedOut {
+            RunLoop.main.run(until: Date() + 0.25)
+        }
     }
 }
