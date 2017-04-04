@@ -69,6 +69,7 @@ class CacheOperation: Operation {
             }()
 
             if self.isCancelled {
+                testingPrint(after: "setting user agent")
                 self.isFinished = true
                 self.isExecuting = false
                 return
@@ -80,12 +81,20 @@ class CacheOperation: Operation {
             }
 
             if self.isCancelled {
+                testingPrint(after: "fetching plain HTML")
                 self.isFinished = true
                 self.isExecuting = false
                 return
             }
 
             let preprocessedHTMLString = self.htmlProcessors?.preprocessor?(plainHTMLString) ?? plainHTMLString
+
+            if self.isCancelled {
+                testingPrint(after: "HTML preprocessing")
+                self.isFinished = true
+                self.isExecuting = false
+                return
+            }
 
             guard let url = self.request.url else {
                 assertionFailure("Expected non-nil URL in request \(self.request).")
@@ -96,6 +105,7 @@ class CacheOperation: Operation {
             let inlinedHTMLString = WKWebView.inlineResources(for: preprocessedHTMLString, with: baseURL)
 
             if self.isCancelled {
+                testingPrint(after: "inlining resource files")
                 self.isFinished = true
                 self.isExecuting = false
                 return
@@ -104,6 +114,7 @@ class CacheOperation: Operation {
             let postprocessedHTMLString = self.htmlProcessors?.postprocessor?(inlinedHTMLString) ?? inlinedHTMLString
 
             if self.isCancelled {
+                testingPrint(after: "HTML postprocessing")
                 self.isFinished = true
                 self.isExecuting = false
                 return
@@ -122,6 +133,7 @@ class CacheOperation: Operation {
                     assertionFailure("Failed to save inlined page file.")
                 }
                 if self.isCancelled {
+                    testingPrint(after: "saving inlined page for testing")
                     self.isFinished = true
                     self.isExecuting = false
                     return
@@ -137,6 +149,7 @@ class CacheOperation: Operation {
             }()
 
             if self.isCancelled {
+                testingPrint(after: "preparing response to cache")
                 self.isFinished = true
                 self.isExecuting = false
                 return
@@ -147,6 +160,7 @@ class CacheOperation: Operation {
             print("Cache stored for \(self.request.requestByRemovingURLFragment.url?.absoluteString ?? "nil url").")
 
             if self.isCancelled {
+                testingPrint(after: "storing cache")
                 self.isFinished = true
                 self.isExecuting = false
                 return
@@ -155,4 +169,11 @@ class CacheOperation: Operation {
             self.cachingCompletionHandler?()
         }
     }
+
+}
+
+fileprivate func testingPrint(after whatJustHapped: String) {
+    #if LOG_FOR_TESTING
+        print("Operation cancelled after \(whatJustHapped).")
+    #endif
 }
