@@ -27,8 +27,6 @@ public struct HTMLProcessors: HTMLProcessorsProtocol {
 }
 
 public extension WKWebView {
-        
-    private static let session = URLSession(configuration: .default)
 
     public func cachingLoad(_ request: URLRequest) -> WKNavigation? {
         
@@ -140,7 +138,7 @@ public extension WKWebView {
         
         htmlDispatchGroup.enter()
         
-        WKWebView.session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) in
+        URLSession(configuration: .default).dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) in
             
             guard error == nil else {
                 assertionFailure("Error: \(error!.localizedDescription)")
