@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BD2AF6FA1E936EDB000FC209 /* CacheOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2AF6F91E936EDB000FC209 /* CacheOperation.swift */; };
 		BD63A78E1E88B78600250536 /* NaiveCachingWebView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD63A7841E88B78600250536 /* NaiveCachingWebView.framework */; };
 		BD63A7931E88B78600250536 /* NaiveCachingWebViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD63A7921E88B78600250536 /* NaiveCachingWebViewTests.swift */; };
 		BD63A7951E88B78600250536 /* NaiveCachingWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = BD63A7871E88B78600250536 /* NaiveCachingWebView.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -33,6 +34,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BD2AF6F91E936EDB000FC209 /* CacheOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheOperation.swift; sourceTree = "<group>"; };
 		BD63A7841E88B78600250536 /* NaiveCachingWebView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NaiveCachingWebView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD63A7871E88B78600250536 /* NaiveCachingWebView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NaiveCachingWebView.h; sourceTree = "<group>"; };
 		BD63A7881E88B78600250536 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -96,6 +98,7 @@
 			children = (
 				BD63A7871E88B78600250536 /* NaiveCachingWebView.h */,
 				BD63A7A71E88C0D600250536 /* WKWebView+NaiveCachingWebView.swift */,
+				BD2AF6F91E936EDB000FC209 /* CacheOperation.swift */,
 				BD63A7A81E88C0D600250536 /* WKWebView+ScriptHandler.swift */,
 				BD63A7A91E88C0D600250536 /* WKUserContentController+RemoveUserScript.swift */,
 				BD63A7AE1E88C37000250536 /* URLRequest+Extension.swift */,
@@ -261,6 +264,7 @@
 				BD63A7AA1E88C0D600250536 /* WKWebView+NaiveCachingWebView.swift in Sources */,
 				BD63A7AF1E88C37000250536 /* URLRequest+Extension.swift in Sources */,
 				BD63A7AB1E88C0D600250536 /* WKWebView+ScriptHandler.swift in Sources */,
+				BD2AF6FA1E936EDB000FC209 /* CacheOperation.swift in Sources */,
 				BD63A7B11E88C37C00250536 /* URL+Extension.swift in Sources */,
 				BD63A7B51E88C3B400250536 /* String+NSRange.swift in Sources */,
 				BD63A7AC1E88C0D600250536 /* WKUserContentController+RemoveUserScript.swift in Sources */,

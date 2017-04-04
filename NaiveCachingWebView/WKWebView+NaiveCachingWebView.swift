@@ -29,7 +29,7 @@ public struct HTMLProcessors: HTMLProcessorsProtocol {
 public extension WKWebView {
         
     private static let session = URLSession(configuration: .default)
-    
+
     public func cachingLoad(_ request: URLRequest) -> WKNavigation? {
         
         return cachingLoad(request, with: nil)
@@ -70,13 +70,11 @@ public extension WKWebView {
         return URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment) != nil
     }
 
-    public func cache(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) {
+    @discardableResult public func cache(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) -> Operation {
 
-        DispatchQueue.global(qos: .utility).async {
-
-            self.cacheInlinedWebPage(for: request, with: htmlProcessors)
-            cachingCompletionHanlder?()
-        }
+        let cacheOperation = CacheOperation(self, request: request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
+        cacheOperation.start()
+        return cacheOperation
     }
 
     private static let userAgent: String = {
@@ -134,7 +132,7 @@ public extension WKWebView {
         return navigation
     }
     
-    private func cacheInlinedWebPage(for request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol?) {
+    func cacheInlinedWebPage(for request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol?) {
         
         let requestWithUserAgentSet: URLRequest = {
             var request = request
