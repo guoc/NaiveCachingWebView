@@ -35,7 +35,7 @@ public extension WKWebView {
         return cachingLoad(request, with: nil)
     }
     
-    public func cachingLoad(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHanlder: (() -> Void)? = nil) -> WKNavigation? {
+    public func cachingLoad(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) -> WKNavigation? {
         
         guard !isLoading else {
             print("Web view is loading, stop further loadWithCache.")
@@ -52,7 +52,7 @@ public extension WKWebView {
         }
 
         if let navigation = loadWithCache(for: request) {
-            cachingCompletionHanlder?()
+            cachingCompletionHandler?()
             return navigation
         }
         
@@ -60,7 +60,7 @@ public extension WKWebView {
         
         let navigation = load(request)
         
-        cache(request, with: htmlProcessors, cachingCompletionHanlder: cachingCompletionHanlder)
+        cache(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
 
         return navigation
     }
@@ -70,7 +70,7 @@ public extension WKWebView {
         return URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment) != nil
     }
 
-    public func cache(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHanlder: (() -> Void)? = nil) {
+    public func cache(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) {
 
         DispatchQueue.global(qos: .utility).async {
 
