@@ -28,12 +28,12 @@ public struct HTMLProcessors: HTMLProcessorsProtocol {
 
 public extension WKWebView {
 
-    public func cachingLoad(_ request: URLRequest) -> WKNavigation? {
+    @discardableResult public func cachingLoad(_ request: URLRequest) -> WKNavigation? {
         
         return cachingLoad(request, with: nil)
     }
     
-    public func cachingLoad(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) -> WKNavigation? {
+    @discardableResult public func cachingLoad(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) -> WKNavigation? {
         
         guard !isLoading else {
             print("Web view is loading, stop further loadWithCache.")
@@ -68,10 +68,12 @@ public extension WKWebView {
         return URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment) != nil
     }
 
-    @discardableResult public class func cache(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) -> Operation {
+    @discardableResult public class func cache(_ request: URLRequest, startAutomatically startFlag: Bool = true, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) -> Operation {
 
         let cacheOperation = CacheOperation(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
-        cacheOperation.start()
+        if startFlag {
+            cacheOperation.start()
+        }
         return cacheOperation
     }
 
