@@ -83,8 +83,6 @@ public extension WKWebView {
         
         let webView = WKWebView(frame: .zero)
         
-        let dispatchGroup = DispatchGroup()
-        dispatchGroup.enter()
         webView.evaluateJavaScript("navigator.userAgent") { (result: Any?, error: Error?) in
             guard error == nil else {
                 preconditionFailure(error!.localizedDescription)
@@ -93,12 +91,10 @@ public extension WKWebView {
                 preconditionFailure("Failed to get user agent.")
             }
             userAgent = result
-            dispatchGroup.leave()
+            CFRunLoopStop(CFRunLoopGetCurrent())
         }
-        while dispatchGroup.wait(timeout: .now()) == .timedOut {
-            RunLoop.current.run(until: Date() + 0.25)
-        }
-        
+        CFRunLoopRun()
+
         return userAgent
     }()
 

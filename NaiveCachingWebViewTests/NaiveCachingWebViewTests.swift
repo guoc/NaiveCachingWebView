@@ -116,16 +116,8 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
     
     private class NavigationDelegate: NSObject, WKNavigationDelegate {
         
-        let dispatchGroup: DispatchGroup
-        
-        init(dispatchGroup: DispatchGroup) {
-            self.dispatchGroup = dispatchGroup
-        }
-        
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                self.dispatchGroup.leave()
-            }
+            CFRunLoopStop(CFRunLoopGetCurrent())
         }
     }
 
@@ -133,7 +125,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         
         let webView = WKWebView(frame: window.bounds)
         let dispatchGroup = DispatchGroup()
-        let delegate = NavigationDelegate(dispatchGroup: dispatchGroup)
+        let delegate = NavigationDelegate()
         webView.navigationDelegate = delegate
         window.addSubview(webView)
 
@@ -141,9 +133,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
 
         _ = webView.load(request)
         
-        while dispatchGroup.wait(timeout: .now()) == .timedOut {
-            RunLoop.current.run(until: Date() + 0.25)
-        }
+        CFRunLoopRun()
         
         guard let snapshot = image(forViewOrLayer: webView) else {
             preconditionFailure("Failed to get the web view's snapshot.")
@@ -158,22 +148,16 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
     private func syncCachingLoad(request: URLRequest) -> UIImage {
         
         let webView = WKWebView(frame: window.bounds)
-        let dispatchGroup = DispatchGroup()
-        let delegate = NavigationDelegate(dispatchGroup: dispatchGroup)
+        let delegate = NavigationDelegate()
         webView.navigationDelegate = delegate
         window.addSubview(webView)
-        
-        dispatchGroup.enter() // wait navigation finished
-        dispatchGroup.enter() // wait caching finished
-        
+
         _ = webView.cachingLoad(request, with: nil) {
-            dispatchGroup.leave()
+            CFRunLoopStop(CFRunLoopGetCurrent())
         }
-        
-        while dispatchGroup.wait(timeout: .now()) == .timedOut {
-            RunLoop.current.run(until: Date() + 0.25)
-        }
-        
+        CFRunLoopRun() // wait navigation finished
+        CFRunLoopRun() // wait caching finished
+
         guard let snapshot = image(forViewOrLayer: webView) else {
             preconditionFailure("Failed to get the web view's snapshot.")
         }
