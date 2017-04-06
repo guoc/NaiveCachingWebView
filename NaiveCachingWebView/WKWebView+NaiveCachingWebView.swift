@@ -156,7 +156,7 @@ public extension WKWebView {
         
         let navigation = load(cachedResponse.data, mimeType: mimeType, characterEncodingName: encodingName, baseURL: baseURL)
         
-        print("The cache for \(url) is applied.")
+        print("The cache of \(request.requestByRemovingURLFragment.url?.description ?? "nil URL") is applied for \(url).")
         
         return navigation
     }
