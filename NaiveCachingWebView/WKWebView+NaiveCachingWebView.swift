@@ -79,12 +79,19 @@ public extension WKWebView {
 
 
     static let userAgent: String = {
+
+        // TODO: figure out why:
+        // if CFRunLoopRun() is waiting for function A, A can not call CFRunLoopRun(), otherwise waiting forever.
+
+        // Init in main thread, otherwise evaluateJavaScript's completionHandler might not be in main thread as the document said,
+        // that will cause the following WKWebView's load method not working (navigationDelegate methods not called).
         var webView: WKWebView!
 
         var userAgent: String!
+
         let dispatchGroup = DispatchGroup()
 
-        DispatchQueue.main.async(group: dispatchGroup) {
+        if Thread.isMainThread {
             webView = WKWebView(frame: .zero)
             dispatchGroup.enter()
             webView.evaluateJavaScript("navigator.userAgent") { (result: Any?, error: Error?) in
@@ -97,9 +104,27 @@ public extension WKWebView {
                 userAgent = result
                 dispatchGroup.leave()
             }
+            while dispatchGroup.wait(timeout: .now()) == .timedOut {
+                RunLoop.current.run(until: Date() + 0.25)
+            }
+        } else {
+            DispatchQueue.main.async(group: dispatchGroup) {
+                webView = WKWebView(frame: .zero)
+                dispatchGroup.enter()
+                webView.evaluateJavaScript("navigator.userAgent") { (result: Any?, error: Error?) in
+                    guard error == nil else {
+                        preconditionFailure(error!.localizedDescription)
+                    }
+                    guard let result = result as? String else {
+                        preconditionFailure("Failed to get user agent.")
+                    }
+                    userAgent = result
+                    dispatchGroup.leave()
+                }
+            }
+            dispatchGroup.wait()
         }
-        dispatchGroup.wait()
-        
+
         return userAgent
     }()
 
