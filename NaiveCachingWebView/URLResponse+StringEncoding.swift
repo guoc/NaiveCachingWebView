@@ -12,7 +12,13 @@ extension URLResponse {
     
     var stringEncoding: String.Encoding? {
         if let textEncodingName = textEncodingName {
-            return String.Encoding(rawValue: UInt(CFStringConvertIANACharSetNameToEncoding(textEncodingName as CFString)))
+            let rawValue = UInt(CFStringConvertIANACharSetNameToEncoding(textEncodingName as CFString))
+            switch rawValue {
+            case 0x8000100:
+                return .utf8
+            default:
+                return String.Encoding(rawValue: rawValue)
+            }
         } else {
             return nil
         }
