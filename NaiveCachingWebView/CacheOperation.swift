@@ -63,6 +63,16 @@ class CacheOperation: Operation {
 
         DispatchQueue.global(qos: .utility).async {
 
+            if WKWebView.hasCached(for: self.request) {
+                print("The cache for \(self.request.url?.description ?? "nil url") exists.")
+                print("Stop caching.")
+                
+                self.cachingCompletionHandler?()
+                self.isExecuting = false
+                self.isFinished = true
+                return
+            }
+
             let requestWithUserAgentSet: URLRequest = {
                 var request = self.request
                 request.setValue(WKWebView.userAgent, forHTTPHeaderField: "User-Agent")
