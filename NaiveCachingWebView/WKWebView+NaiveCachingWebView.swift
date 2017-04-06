@@ -26,6 +26,8 @@ public struct HTMLProcessors: HTMLProcessorsProtocol {
     }
 }
 
+public typealias CachingCompletionHandler = (_ cachedRequest: URLRequest, _ canceled: Bool) -> Void
+
 public extension WKWebView {
 
     @discardableResult public func cachingLoad(_ request: URLRequest) -> WKNavigation? {
@@ -34,7 +36,7 @@ public extension WKWebView {
     }
 
     // TODO: Add @escaping for cachingCompletionHandler. Now it has been considered as @escaping, see [Optional closure type is always considered @escaping](https://bugs.swift.org/browse/SR-2324)
-    @discardableResult public func cachingLoad(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) -> WKNavigation? {
+    @discardableResult public func cachingLoad(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: CachingCompletionHandler? = nil) -> WKNavigation? {
         
         guard !isLoading else {
             print("Web view is loading, stop further loadWithCache.")
@@ -52,7 +54,7 @@ public extension WKWebView {
 
         if let navigation = loadWithCache(for: request) {
             // TODO: In this case, cachingCompletionHandler is non-escape, should it be consistent with other cases by wrapping it with an async?
-            cachingCompletionHandler?()
+            cachingCompletionHandler?(request, false)
             return navigation
         }
         
@@ -70,7 +72,8 @@ public extension WKWebView {
         return URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment) != nil
     }
 
-    @discardableResult public class func cache(_ request: URLRequest, startAutomatically startFlag: Bool = true, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) -> Operation {
+
+    @discardableResult public class func cache(_ request: URLRequest, startAutomatically startFlag: Bool = true, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: CachingCompletionHandler? = nil) -> Operation {
 
         let cacheOperation = CacheOperation(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
         if startFlag {

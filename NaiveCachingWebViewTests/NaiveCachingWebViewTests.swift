@@ -114,7 +114,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
     func testCancelCacheOperation() {
 
         let request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/bytedump")!)
-        let cacheOperation = WKWebView.cache(request, with: nil) {
+        let cacheOperation = WKWebView.cache(request, with: nil) { (_, _) in
             print("Cache finished")
         }
         RunLoop.current.run(until: Date() + TimeInterval(arc4random_uniform(10)))
@@ -133,7 +133,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
 
         let currentRunLoop = CFRunLoopGetCurrent()
         let request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/bytedump")!)
-        WKWebView.cache(request, with: nil) {
+        WKWebView.cache(request, with: nil) { (_, _) in
             print("Cache finished")
             CFRunLoopStop(currentRunLoop)
         }
@@ -218,7 +218,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
 
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
-        _ = webView.cachingLoad(request, with: nil) {
+        _ = webView.cachingLoad(request, with: nil) { (_, _) in
             // This completionHandler may be called non-escaping, which means it may be called before executing next statement.
             // TODO: Fix it with Swift another escaping related issue in WKWebView+NaiveCachingWebView.swift
             dispatchGroup.leave()
@@ -244,7 +244,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
 
         let currentRunLoop = CFRunLoopGetCurrent()
 
-        WKWebView.cache(request) {
+        WKWebView.cache(request) { (_, _) in
             CFRunLoopStop(currentRunLoop)
         }
 

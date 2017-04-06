@@ -16,9 +16,9 @@ class CacheOperation: Operation {
 
     private let request: URLRequest
     private let htmlProcessors: HTMLProcessorsProtocol?
-    private let cachingCompletionHandler: (() -> Void)?
+    private let cachingCompletionHandler: CachingCompletionHandler?
 
-    init(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) {
+    init(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: CachingCompletionHandler? = nil) {
         self.request = request
         self.htmlProcessors = htmlProcessors
         self.cachingCompletionHandler = cachingCompletionHandler
@@ -67,7 +67,7 @@ class CacheOperation: Operation {
                 print("The cache for \(self.request.url?.description ?? "nil url") exists.")
                 print("Stop caching.")
                 
-                self.cachingCompletionHandler?()
+                self.cachingCompletionHandler?(self.request, true)
                 self.isExecuting = false
                 self.isFinished = true
                 return
@@ -183,7 +183,7 @@ class CacheOperation: Operation {
                 return
             }
 
-            self.cachingCompletionHandler?()
+            self.cachingCompletionHandler?(self.request, false)
 
             self.isExecuting = false
             self.isFinished = true
