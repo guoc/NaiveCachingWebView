@@ -172,11 +172,18 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         webView.navigationDelegate = delegate
         window.addSubview(webView)
 
+        let dispatchGroup = DispatchGroup()
+        dispatchGroup.enter()
         _ = webView.cachingLoad(request, with: nil) {
-            CFRunLoopStop(currentRunLoop)
+            // This completionHandler may be called non-escaping, which means it may be called before executing next statement.
+            // TODO: Fix it with Swift another escaping related issue in WKWebView+NaiveCachingWebView.swift
+            dispatchGroup.leave()
         }
         CFRunLoopRun() // wait navigation finished
-        CFRunLoopRun() // wait caching finished
+        // wait caching finished
+        while dispatchGroup.wait(timeout: .now()) == .timedOut {
+            RunLoop.current.run(until: Date() + 0.25)
+        }
 
         guard let snapshot = image(forViewOrLayer: webView) else {
             preconditionFailure("Failed to get the web view's snapshot.")

@@ -32,7 +32,8 @@ public extension WKWebView {
         
         return cachingLoad(request, with: nil)
     }
-    
+
+    // TODO: Add @escaping for cachingCompletionHandler. Now it has been considered as @escaping, see [Optional closure type is always considered @escaping](https://bugs.swift.org/browse/SR-2324)
     @discardableResult public func cachingLoad(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: (() -> Void)? = nil) -> WKNavigation? {
         
         guard !isLoading else {
@@ -50,6 +51,7 @@ public extension WKWebView {
         }
 
         if let navigation = loadWithCache(for: request) {
+            // TODO: In this case, cachingCompletionHandler is non-escape, should it be consistent with other cases by wrapping it with an async?
             cachingCompletionHandler?()
             return navigation
         }
