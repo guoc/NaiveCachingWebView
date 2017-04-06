@@ -156,9 +156,15 @@ class CacheOperation: Operation {
                 return
             }
 
-            URLCache.shared.storeCachedResponse(newCachedResponse, for: self.request.requestByRemovingURLFragment)
-            
-            print("Cache stored for \(self.request.requestByRemovingURLFragment.url?.absoluteString ?? "nil url").")
+            let cachedRequest = self.request.requestByRemovingURLFragment
+
+            URLCache.shared.storeCachedResponse(newCachedResponse, for: cachedRequest)
+
+            if WKWebView.hasCached(for: cachedRequest) {
+                print("Cache stored successfully for \(cachedRequest.url?.description ?? "nil url").")
+            } else {
+                print("Cache failed for \(cachedRequest.url?.description ?? "nil url").")
+            }
 
             if self.isCancelled {
                 testingPrint(after: "storing cache")
