@@ -8,9 +8,9 @@
 
 import Foundation
 
-extension URLRequest {
+public extension URLRequest {
     
-    var requestByRemovingURLFragment: URLRequest {
+    public var requestByRemovingURLFragment: URLRequest {
         var request = self
         request.url = request.url?.urlByRemovingFragment
         return request

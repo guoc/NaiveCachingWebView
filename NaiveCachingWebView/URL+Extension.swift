@@ -8,9 +8,9 @@
 
 import Foundation
 
-extension URL {
+public extension URL {
         
-    var urlByRemovingFragment: URL {
+    public var urlByRemovingFragment: URL {
         guard let fragment = fragment else {
             return self
         }

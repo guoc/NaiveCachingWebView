@@ -157,7 +157,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
                 
                 let nativeLoadingResult = syncLoad(request: request)
                 
-                _ = syncCachingLoad(request: request)
+                syncCachingLoad(request: request)
                 
                 let cachingLoadingResult = syncCachingLoad(request: request)
                 
