@@ -77,28 +77,33 @@ public extension WKWebView {
         return cacheOperation
     }
 
-    static let userAgent: String = {
-        
-        var userAgent: String!
-        
-        let webView = WKWebView(frame: .zero)
-        
-        webView.evaluateJavaScript("navigator.userAgent") { (result: Any?, error: Error?) in
-            guard error == nil else {
-                preconditionFailure(error!.localizedDescription)
-            }
-            guard let result = result as? String else {
-                preconditionFailure("Failed to get user agent.")
-            }
-            userAgent = result
-            CFRunLoopStop(CFRunLoopGetCurrent())
-        }
-        CFRunLoopRun()
 
+    static let userAgent: String = {
+        var webView: WKWebView!
+
+        var userAgent: String!
+        let dispatchGroup = DispatchGroup()
+
+        DispatchQueue.main.async(group: dispatchGroup) {
+            webView = WKWebView(frame: .zero)
+            dispatchGroup.enter()
+            webView.evaluateJavaScript("navigator.userAgent") { (result: Any?, error: Error?) in
+                guard error == nil else {
+                    preconditionFailure(error!.localizedDescription)
+                }
+                guard let result = result as? String else {
+                    preconditionFailure("Failed to get user agent.")
+                }
+                userAgent = result
+                dispatchGroup.leave()
+            }
+        }
+        dispatchGroup.wait()
+        
         return userAgent
     }()
 
-    
+
     private func loadWithCache(for request: URLRequest) -> WKNavigation? {
 
         guard WKWebView.hasCached(for: request) else {

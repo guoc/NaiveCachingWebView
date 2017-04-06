@@ -83,6 +83,20 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         }
     }
 
+// MARK: - Test load after cache
+
+    func testLoadAfterCache() {
+
+        let currentRunLoop = CFRunLoopGetCurrent()
+        let request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/bytedump")!)
+        WKWebView.cache(request, with: nil) {
+            print("Cache finished")
+            CFRunLoopStop(currentRunLoop)
+        }
+        CFRunLoopRun()
+        syncLoad(request: request)
+    }
+
 // MARK: - Test caching correction
 
     func testCachingCorrection() {
@@ -115,24 +129,27 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
 // MARK: - Helpers
     
     private class NavigationDelegate: NSObject, WKNavigationDelegate {
-        
+
+        let currentRunLoop: CFRunLoop
+
+        init(currentRunLoop: CFRunLoop) {
+            self.currentRunLoop = currentRunLoop
+        }
+
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            CFRunLoopStop(CFRunLoopGetCurrent())
+            CFRunLoopStop(currentRunLoop)
         }
     }
 
     @discardableResult func syncLoad(request: URLRequest) -> UIImage {
-        
+
         let webView = WKWebView(frame: window.bounds)
-        let dispatchGroup = DispatchGroup()
-        let delegate = NavigationDelegate()
+        let delegate = NavigationDelegate(currentRunLoop: CFRunLoopGetCurrent())
         webView.navigationDelegate = delegate
         window.addSubview(webView)
 
-        dispatchGroup.enter()
-
         _ = webView.load(request)
-        
+
         CFRunLoopRun()
         
         guard let snapshot = image(forViewOrLayer: webView) else {
@@ -148,12 +165,13 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
     private func syncCachingLoad(request: URLRequest) -> UIImage {
         
         let webView = WKWebView(frame: window.bounds)
-        let delegate = NavigationDelegate()
+        let currentRunLoop = CFRunLoopGetCurrent()!
+        let delegate = NavigationDelegate(currentRunLoop: currentRunLoop)
         webView.navigationDelegate = delegate
         window.addSubview(webView)
 
         _ = webView.cachingLoad(request, with: nil) {
-            CFRunLoopStop(CFRunLoopGetCurrent())
+            CFRunLoopStop(currentRunLoop)
         }
         CFRunLoopRun() // wait navigation finished
         CFRunLoopRun() // wait caching finished
@@ -171,15 +189,12 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
 
     private func syncCache(request: URLRequest) {
 
-        let dispatchGroup = DispatchGroup()
+        let currentRunLoop = CFRunLoopGetCurrent()
 
-        dispatchGroup.enter()
         WKWebView.cache(request) {
-            dispatchGroup.leave()
+            CFRunLoopStop(currentRunLoop)
         }
 
-        while dispatchGroup.wait(timeout: .now()) == .timedOut {
-            RunLoop.current.run(until: Date() + 0.25)
-        }
+        CFRunLoopRun()
     }
 }
