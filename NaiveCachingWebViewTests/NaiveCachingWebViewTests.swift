@@ -137,7 +137,9 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         }
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            CFRunLoopStop(currentRunLoop)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { 
+                CFRunLoopStop(self.currentRunLoop)
+            }
         }
     }
 
