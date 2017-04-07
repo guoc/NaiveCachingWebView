@@ -72,6 +72,13 @@ public extension WKWebView {
         return URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment) != nil
     }
 
+    public class func cacheInfo(for request: URLRequest) -> CacheInfo? {
+
+        let userInfo = URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment)?.userInfo
+        let cacheInfo = CacheInfo(from: userInfo)
+        return cacheInfo
+    }
+
     @discardableResult public class func cache(_ request: URLRequest, startAutomatically startFlag: Bool = true, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: CachingCompletionHandler? = nil) -> Operation {
 
         let cacheOperation = CacheOperation(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)

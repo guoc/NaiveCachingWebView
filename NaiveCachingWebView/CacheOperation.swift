@@ -156,7 +156,8 @@ class CacheOperation: Operation {
                 guard let data = postprocessedHTMLString.data(using: .utf8) else {
                     preconditionFailure("Failed to convert HTML string to data.")
                 }
-                return CachedURLResponse(response: response, data: data)
+                let userInfo = CacheInfo().toUserInfo()
+                return CachedURLResponse(response: response, data: data, userInfo: userInfo, storagePolicy: .allowed)
             }()
 
             if self.isCancelled {
