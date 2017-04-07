@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BD029BC41E97186000926490 /* CacheOperationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD029BC31E97186000926490 /* CacheOperationTests.swift */; };
 		BD2AF6FA1E936EDB000FC209 /* CacheOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2AF6F91E936EDB000FC209 /* CacheOperation.swift */; };
 		BD63A78E1E88B78600250536 /* NaiveCachingWebView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD63A7841E88B78600250536 /* NaiveCachingWebView.framework */; };
 		BD63A7931E88B78600250536 /* NaiveCachingWebViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD63A7921E88B78600250536 /* NaiveCachingWebViewTests.swift */; };
@@ -34,6 +35,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BD029BC31E97186000926490 /* CacheOperationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheOperationTests.swift; sourceTree = "<group>"; };
 		BD2AF6F91E936EDB000FC209 /* CacheOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheOperation.swift; sourceTree = "<group>"; };
 		BD63A7841E88B78600250536 /* NaiveCachingWebView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NaiveCachingWebView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD63A7871E88B78600250536 /* NaiveCachingWebView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NaiveCachingWebView.h; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 			isa = PBXGroup;
 			children = (
 				BD63A7921E88B78600250536 /* NaiveCachingWebViewTests.swift */,
+				BD029BC31E97186000926490 /* CacheOperationTests.swift */,
 				BD63A7941E88B78600250536 /* Info.plist */,
 				BD63A84F1E8A5B4600250536 /* NaiveCachingWebViewTests-Bridging-Header.h */,
 				BD63A8561E8A7F3900250536 /* FBSnapshotTestCase+Extension.swift */,
@@ -275,6 +278,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD029BC41E97186000926490 /* CacheOperationTests.swift in Sources */,
 				BD63A7931E88B78600250536 /* NaiveCachingWebViewTests.swift in Sources */,
 				BD63A8571E8A7F3900250536 /* FBSnapshotTestCase+Extension.swift in Sources */,
 			);
