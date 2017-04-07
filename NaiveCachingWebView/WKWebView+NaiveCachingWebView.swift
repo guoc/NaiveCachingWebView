@@ -72,7 +72,6 @@ public extension WKWebView {
         return URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment) != nil
     }
 
-
     @discardableResult public class func cache(_ request: URLRequest, startAutomatically startFlag: Bool = true, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: CachingCompletionHandler? = nil) -> Operation {
 
         let cacheOperation = CacheOperation(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
@@ -82,8 +81,7 @@ public extension WKWebView {
         return cacheOperation
     }
 
-
-    static let userAgent: String = {
+    internal static let userAgent: String = {
 
         // TODO: figure out why:
         // if CFRunLoopRun() is waiting for function A, A can not call CFRunLoopRun(), otherwise waiting forever.
@@ -133,7 +131,6 @@ public extension WKWebView {
         return userAgent
     }()
 
-
     private func loadWithCache(for request: URLRequest) -> WKNavigation? {
 
         guard WKWebView.hasCached(for: request) else {
@@ -161,7 +158,7 @@ public extension WKWebView {
         return navigation
     }
 
-    class func plainHTML(for request: URLRequest) -> String? {
+    internal class func plainHTML(for request: URLRequest) -> String? {
         
         let htmlDispatchGroup = DispatchGroup()
         
@@ -205,7 +202,7 @@ public extension WKWebView {
         return htmlString
     }
     
-    class func inlineResources(for plainHTML: String, with baseURL: URL) -> String {
+    internal class func inlineResources(for plainHTML: String, with baseURL: URL) -> String {
         
         var newHTMLString = plainHTML
         
@@ -390,9 +387,9 @@ public extension WKWebView {
 
 }
 
-private extension String {
+internal extension String {
     
-    var stringByRemovingSlashStarComments: String {
+    internal var stringByRemovingSlashStarComments: String {
         get {
             return replacingOccurrences(of: "\\/\\*.*\\*\\/", with: "", options: .regularExpression)
         }
