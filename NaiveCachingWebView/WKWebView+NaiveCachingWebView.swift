@@ -69,7 +69,11 @@ public extension WKWebView {
 
     public class func hasCached(for request: URLRequest) -> Bool {
 
-        return URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment) != nil
+        guard let cacheInfo = cacheInfo(for: request) else {
+            return false
+        }
+        precondition(cacheInfo.naiveCachingWebViewCached, "Unexpected naiveCachingWebViewCached \(cacheInfo.naiveCachingWebViewCached), it should always be true.")
+        return true
     }
 
     public class func cacheInfo(for request: URLRequest) -> CacheInfo? {

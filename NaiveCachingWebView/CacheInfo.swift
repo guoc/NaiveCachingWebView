@@ -14,22 +14,28 @@ public struct CacheInfo {
         private init() {}
 
         static let cacheData = "cacheDate"
+        static let naiveCachingWebViewCached = "naiveCachingWebViewCached"
     }
 
     public let cacheDate: Date
+    public let naiveCachingWebViewCached: Bool
 
     internal init() {
         cacheDate = Date()
+        naiveCachingWebViewCached = true
     }
 
     internal init?(from userInfo: [AnyHashable : Any]?) {
-        guard let cacheDate = userInfo?[UserInfoKeys.cacheData] as? Date else {
+        guard let cacheDate = userInfo?[UserInfoKeys.cacheData] as? Date
+            , let naiveCachingWebViewCached = userInfo?[UserInfoKeys.naiveCachingWebViewCached] as? Bool else
+        {
             return nil
         }
         self.cacheDate = cacheDate
+        self.naiveCachingWebViewCached = naiveCachingWebViewCached
     }
 
     internal func toUserInfo() -> [AnyHashable : Any] {
-        return [UserInfoKeys.cacheData: cacheDate]
+        return [UserInfoKeys.cacheData: cacheDate, UserInfoKeys.naiveCachingWebViewCached: naiveCachingWebViewCached]
     }
 }
