@@ -19,7 +19,7 @@ public extension WKWebView {
     }
 
     // TODO: Add @escaping for cachingCompletionHandler. Now it has been considered as @escaping, see [Optional closure type is always considered @escaping](https://bugs.swift.org/browse/SR-2324)
-    @discardableResult public func cachingLoad(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: CachingCompletionHandler? = nil) -> WKNavigation? {
+    @discardableResult public func cachingLoad(_ request: URLRequest, options: CachingOptions = [], with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: CachingCompletionHandler? = nil) -> WKNavigation? {
         
         guard !isLoading else {
             print("Web view is loading, stop further loadWithCache.")
@@ -35,17 +35,36 @@ public extension WKWebView {
             setupScrollToFragmentScript(with: fragment)
         }
 
-        if let navigation = loadWithCache(for: request) {
-            // TODO: In this case, cachingCompletionHandler is non-escape, should it be consistent with other cases by wrapping it with an async?
-            cachingCompletionHandler?(request, false)
+        if options.contains(.ignoreExistingCache) {
+
+            print("CachingOptions.ignoreExistingCache is applied.")
+
+        } else if WKWebView.hasCached(for: request) {
+
+            let navigation = loadWithCache(for: request)
+            if options.contains(.rebuildCache) {
+                print("CachingOptions.rebuildCache is applied.")
+                WKWebView.cache(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
+            } else {
+                // TODO: In this case, cachingCompletionHandler is non-escape, should it be consistent with other cases by wrapping it with an async?
+                cachingCompletionHandler?(request, false)
+            }
             return navigation
+
+        } else {
+
+            print("No cache found.")
         }
         
-        print("No cache found, try to load, and cache.")
-        
         let navigation = load(request)
-        
-        WKWebView.cache(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
+
+        if options.contains(.rebuildCache) {
+            print("CachingOptions.rebuildCache is applied.")
+            WKWebView.cache(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
+        } else {
+            // TODO: In this case, cachingCompletionHandler is non-escape, should it be consistent with other cases by wrapping it with an async?
+            cachingCompletionHandler?(request, false)
+        }
 
         return navigation
     }

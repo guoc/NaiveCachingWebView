@@ -7,3 +7,11 @@
 //
 
 import Foundation
+
+public struct CachingOptions: OptionSet {
+    public let rawValue: Int
+    public init(rawValue: Int) { self.rawValue = rawValue }
+    
+    public static let ignoreExistingCache = CachingOptions(rawValue: 1 << 1)
+    public static let rebuildCache = CachingOptions(rawValue: 1 << 2)
+}
