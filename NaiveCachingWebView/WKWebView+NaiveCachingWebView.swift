@@ -92,7 +92,7 @@ public extension WKWebView {
             print("Cache for \(request.debugDescription) does not exist, stop removing.")
             return
         }
-        URLCache.shared.removeCachedResponse(for: request)
+        URLCache.shared.removeCachedResponse(for: request.requestByRemovingURLFragment)
     }
 
     @discardableResult public class func cache(_ request: URLRequest, startAutomatically startFlag: Bool = true, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: CachingCompletionHandler? = nil) -> Operation {

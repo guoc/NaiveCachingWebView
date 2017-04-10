@@ -44,7 +44,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
 
     func testCachingOptionsRebuildCache() {
 
-        let request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/bytedump")!)
+        let request = URLRequest(url: URL(string: "https://hackage.haskell.org/packages/archive/base/latest/doc/html/Prelude.html#v:map")!)
 
         let nativeLoadingResult = syncLoad(request: request)
 
