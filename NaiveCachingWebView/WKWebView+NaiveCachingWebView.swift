@@ -44,6 +44,7 @@ public extension WKWebView {
             let navigation = loadWithCache(for: request)
             if options.contains(.rebuildCache) {
                 print("CachingOptions.rebuildCache is applied.")
+                WKWebView.removeCache(for: request)
                 WKWebView.cache(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
             } else {
                 // TODO: In this case, cachingCompletionHandler is non-escape, should it be consistent with other cases by wrapping it with an async?
@@ -60,6 +61,7 @@ public extension WKWebView {
 
         if options.contains(.rebuildCache) {
             print("CachingOptions.rebuildCache is applied.")
+            WKWebView.removeCache(for: request)
             WKWebView.cache(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
         } else {
             // TODO: In this case, cachingCompletionHandler is non-escape, should it be consistent with other cases by wrapping it with an async?
@@ -83,6 +85,14 @@ public extension WKWebView {
         let userInfo = URLCache.shared.cachedResponse(for: request.requestByRemovingURLFragment)?.userInfo
         let cacheInfo = CacheInfo(from: userInfo)
         return cacheInfo
+    }
+
+    public class func removeCache(for request: URLRequest) {
+        guard hasCached(for: request) else {
+            print("Cache for \(request.debugDescription) does not exist, stop removing.")
+            return
+        }
+        URLCache.shared.removeCachedResponse(for: request)
     }
 
     @discardableResult public class func cache(_ request: URLRequest, startAutomatically startFlag: Bool = true, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: CachingCompletionHandler? = nil) -> Operation {
