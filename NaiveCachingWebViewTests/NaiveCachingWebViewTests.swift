@@ -42,15 +42,15 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         FBSnapshotCompareReferenceImage(nativeLoadingResult, to: cachingLoadingResult, tolerance: 0)
     }
 
-    func testCachingOptionsRebuildCache() {
+    func testCachingOptions() {
 
         let request = URLRequest(url: URL(string: "https://hackage.haskell.org/packages/archive/base/latest/doc/html/Prelude.html#v:map")!)
 
         let nativeLoadingResult = syncLoad(request: request)
 
-        syncCache(request: request)
+        syncCachingLoad(request: request)
         
-        let cachingLoadingResult = syncCachingLoad(request: request, options: [.rebuildCache])
+        let cachingLoadingResult = syncCachingLoad(request: request, options: [.ignoreExistingCache, .rebuildCache])
 
         FBSnapshotCompareReferenceImage(nativeLoadingResult, to: cachingLoadingResult, tolerance: 0)
     }

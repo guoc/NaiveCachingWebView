@@ -15,11 +15,13 @@ class CachingOperation: Operation {
     private var _finished = false
 
     private let request: URLRequest
+    private let alwaysRebuild: Bool
     private let htmlProcessors: HTMLProcessorsProtocol?
     private let cachingCompletionHandler: CachingCompletionHandler?
 
-    init(_ request: URLRequest, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: CachingCompletionHandler? = nil) {
+    init(_ request: URLRequest, alwaysRebuild: Bool = false, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: CachingCompletionHandler? = nil) {
         self.request = request
+        self.alwaysRebuild = alwaysRebuild
         self.htmlProcessors = htmlProcessors
         self.cachingCompletionHandler = cachingCompletionHandler
         super.init()
@@ -63,7 +65,9 @@ class CachingOperation: Operation {
 
         DispatchQueue.global(qos: .utility).async {
 
-            if WKWebView.hasCached(for: self.request) {
+            if self.alwaysRebuild {
+                print("Always rebuild cache.")
+            } else if WKWebView.hasCached(for: self.request) {
                 print("The cache for \(self.request.url?.description ?? "nil url") exists.")
                 print("Stop caching.")
                 
@@ -71,6 +75,8 @@ class CachingOperation: Operation {
                 self.isExecuting = false
                 self.isFinished = true
                 return
+            } else {
+                print("No cache found, building cache ...")
             }
 
             let requestWithUserAgentSet: URLRequest = {

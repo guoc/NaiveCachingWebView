@@ -44,8 +44,7 @@ public extension WKWebView {
             let navigation = loadWithCache(for: request)
             if options.contains(.rebuildCache) {
                 print("CachingOptions.rebuildCache is applied.")
-                WKWebView.removeCache(for: request)
-                WKWebView.cache(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
+                WKWebView.cache(request, alwaysRebuild: true, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
             } else {
                 // TODO: In this case, cachingCompletionHandler is non-escape, should it be consistent with other cases by wrapping it with an async?
                 cachingCompletionHandler?(request, false)
@@ -61,8 +60,7 @@ public extension WKWebView {
 
         if options.contains(.rebuildCache) {
             print("CachingOptions.rebuildCache is applied.")
-            WKWebView.removeCache(for: request)
-            WKWebView.cache(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
+            WKWebView.cache(request, alwaysRebuild: true, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
         } else {
             // TODO: In this case, cachingCompletionHandler is non-escape, should it be consistent with other cases by wrapping it with an async?
             cachingCompletionHandler?(request, false)
@@ -95,9 +93,9 @@ public extension WKWebView {
         URLCache.shared.removeCachedResponse(for: request.requestByRemovingURLFragment)
     }
 
-    @discardableResult public class func cache(_ request: URLRequest, startAutomatically startFlag: Bool = true, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: CachingCompletionHandler? = nil) -> Operation {
+    @discardableResult public class func cache(_ request: URLRequest, alwaysRebuild: Bool = false, startAutomatically startFlag: Bool = true, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: CachingCompletionHandler? = nil) -> Operation {
 
-        let cacheOperation = CachingOperation(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
+        let cacheOperation = CachingOperation(request, alwaysRebuild: alwaysRebuild, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
         if startFlag {
             cacheOperation.start()
         }
