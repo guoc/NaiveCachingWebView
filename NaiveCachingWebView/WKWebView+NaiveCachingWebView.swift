@@ -9,23 +9,6 @@
 import Foundation
 import WebKit
 
-public protocol HTMLProcessorsProtocol {
-    
-    var preprocessor: ((String) -> String)? { get }
-    var postprocessor: ((String) -> String)? { get }
-}
-
-public struct HTMLProcessors: HTMLProcessorsProtocol {
-    
-    public let preprocessor: ((String) -> String)?
-    public let postprocessor: ((String) -> String)?
-
-    public init(preprocessor: ((String) -> String)?, postprocessor: ((String) -> String)?) {
-        self.preprocessor = preprocessor
-        self.postprocessor = postprocessor
-    }
-}
-
 public typealias CachingCompletionHandler = (_ cachedRequest: URLRequest, _ canceled: Bool) -> Void
 
 public extension WKWebView {

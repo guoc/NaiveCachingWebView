@@ -24,6 +24,7 @@
 		BD63A84D1E8A475200250536 /* FBSnapshotTestCase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD63A84C1E8A475200250536 /* FBSnapshotTestCase.framework */; };
 		BD63A8571E8A7F3900250536 /* FBSnapshotTestCase+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD63A8561E8A7F3900250536 /* FBSnapshotTestCase+Extension.swift */; };
 		BD8DACBC1E8D072200E285DC /* test-links.txt in Resources */ = {isa = PBXBuildFile; fileRef = BD8DACBB1E8D072200E285DC /* test-links.txt */; };
+		BD8FC5501E9B46DF00E8FC86 /* HTMLProcessors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8FC54F1E9B46DF00E8FC86 /* HTMLProcessors.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,7 @@
 		BD63A84F1E8A5B4600250536 /* NaiveCachingWebViewTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NaiveCachingWebViewTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		BD63A8561E8A7F3900250536 /* FBSnapshotTestCase+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FBSnapshotTestCase+Extension.swift"; sourceTree = "<group>"; };
 		BD8DACBB1E8D072200E285DC /* test-links.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "test-links.txt"; sourceTree = "<group>"; };
+		BD8FC54F1E9B46DF00E8FC86 /* HTMLProcessors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLProcessors.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 				BD63A7871E88B78600250536 /* NaiveCachingWebView.h */,
 				BD63A7A71E88C0D600250536 /* WKWebView+NaiveCachingWebView.swift */,
 				BD2AF6F91E936EDB000FC209 /* CacheOperation.swift */,
+				BD8FC54F1E9B46DF00E8FC86 /* HTMLProcessors.swift */,
 				BD029BC51E971E8000926490 /* CacheInfo.swift */,
 				BD63A7A81E88C0D600250536 /* WKWebView+ScriptHandler.swift */,
 				BD63A7A91E88C0D600250536 /* WKUserContentController+RemoveUserScript.swift */,
@@ -272,6 +275,7 @@
 				BD63A7B31E88C39D00250536 /* URLResponse+StringEncoding.swift in Sources */,
 				BD63A7AA1E88C0D600250536 /* WKWebView+NaiveCachingWebView.swift in Sources */,
 				BD63A7AF1E88C37000250536 /* URLRequest+Extension.swift in Sources */,
+				BD8FC5501E9B46DF00E8FC86 /* HTMLProcessors.swift in Sources */,
 				BD63A7AB1E88C0D600250536 /* WKWebView+ScriptHandler.swift in Sources */,
 				BD029BC61E971E8000926490 /* CacheInfo.swift in Sources */,
 				BD2AF6FA1E936EDB000FC209 /* CacheOperation.swift in Sources */,
