@@ -20,7 +20,7 @@ public extension WKWebView {
 
     // TODO: Add @escaping for cachingCompletionHandler. Now it has been considered as @escaping, see [Optional closure type is always considered @escaping](https://bugs.swift.org/browse/SR-2324)
     @discardableResult public func cachingLoad(_ request: URLRequest, options: CachingOptions = [], with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: CachingCompletionHandler? = nil) -> WKNavigation? {
-                
+
         guard let url = request.url else {
             assertionFailure("Expected non-nil URL in request \(request).")
             return nil
@@ -53,7 +53,7 @@ public extension WKWebView {
 
         let requestIgnoringCache: URLRequest = {
             var request = request
-            request.cachePolicy = .reloadIgnoringLocalCacheData
+            request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
             return request
         }()
         print("Request ignoring local cache data.")
