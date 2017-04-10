@@ -87,9 +87,15 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
 
     func testCachingCorrection() {
         
-//        let request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/bytedump")!)
-        
-        for (index, link) in NaiveCachingWebViewTests.testLinks.enumerated() {
+        var randomIndices: Set<Int> = []
+        let linksCount = NaiveCachingWebViewTests.testLinks.count
+        while randomIndices.count < 10 {
+            randomIndices.insert(Int(arc4random_uniform(UInt32(linksCount))))
+        }
+
+        let testLinks = randomIndices.map { NaiveCachingWebViewTests.testLinks[$0] }
+
+        for (index, link) in testLinks.enumerated() {
 
             autoreleasepool {
                 
