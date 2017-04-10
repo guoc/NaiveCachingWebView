@@ -73,6 +73,16 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         XCTAssert(WKWebView.hasCached(for: request))
     }
 
+// MARK: - Test remove cache
+
+    func testRemoveCache() {
+
+        let request = URLRequest(url: URL(string: "https://hackage.haskell.org/packages/archive/base/latest/doc/html/Prelude.html#v:map")!)
+        syncCache(request: request)
+        WKWebView.removeCache(for: request)
+        XCTAssertFalse(WKWebView.hasCached(for: request))
+    }
+
 // MARK: - Test cache
 
     func testCache() {
