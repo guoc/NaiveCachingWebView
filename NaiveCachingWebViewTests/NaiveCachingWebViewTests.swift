@@ -42,6 +42,19 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         FBSnapshotCompareReferenceImage(nativeLoadingResult, to: cachingLoadingResult, tolerance: 0)
     }
 
+    func testCachingOptionsRebuildCache() {
+
+        let request = URLRequest(url: URL(string: "http://hackage.haskell.org/package/bytedump")!)
+
+        let nativeLoadingResult = syncLoad(request: request)
+
+        syncCache(request: request)
+        
+        let cachingLoadingResult = syncCachingLoad(request: request, options: [.rebuildCache])
+
+        FBSnapshotCompareReferenceImage(nativeLoadingResult, to: cachingLoadingResult, tolerance: 0)
+    }
+
 // MARK: - Test user agent
 
     func testUserAgent() {
@@ -156,7 +169,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
         return snapshot
     }
     
-    @discardableResult private func syncCachingLoad(request: URLRequest) -> UIImage {
+    @discardableResult private func syncCachingLoad(request: URLRequest, options: CachingOptions = []) -> UIImage {
         
         let webView = WKWebView(frame: window.bounds)
         let currentRunLoop = CFRunLoopGetCurrent()!
@@ -166,7 +179,7 @@ class NaiveCachingWebViewTests: FBSnapshotTestCase {
 
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
-        _ = webView.cachingLoad(request, with: nil) { (_, _) in
+        webView.cachingLoad(request, options: options, with: nil) { (_, _) in
             // This completionHandler may be called non-escaping, which means it may be called before executing next statement.
             // TODO: Fix it with Swift another escaping related issue in WKWebView+NaiveCachingWebView.swift
             dispatchGroup.leave()
