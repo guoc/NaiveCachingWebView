@@ -68,7 +68,7 @@ public extension WKWebView {
 
     @discardableResult public class func cache(_ request: URLRequest, startAutomatically startFlag: Bool = true, with htmlProcessors: HTMLProcessorsProtocol? = nil, cachingCompletionHandler: CachingCompletionHandler? = nil) -> Operation {
 
-        let cacheOperation = CacheOperation(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
+        let cacheOperation = CachingOperation(request, with: htmlProcessors, cachingCompletionHandler: cachingCompletionHandler)
         if startFlag {
             cacheOperation.start()
         }

@@ -10,7 +10,7 @@
 		BD029BC41E97186000926490 /* CacheOperationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD029BC31E97186000926490 /* CacheOperationTests.swift */; };
 		BD029BC61E971E8000926490 /* CacheInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD029BC51E971E8000926490 /* CacheInfo.swift */; };
 		BD029BC81E97218700926490 /* CacheInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD029BC71E97218700926490 /* CacheInfoTests.swift */; };
-		BD2AF6FA1E936EDB000FC209 /* CacheOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2AF6F91E936EDB000FC209 /* CacheOperation.swift */; };
+		BD2AF6FA1E936EDB000FC209 /* CachingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2AF6F91E936EDB000FC209 /* CachingOperation.swift */; };
 		BD63A78E1E88B78600250536 /* NaiveCachingWebView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD63A7841E88B78600250536 /* NaiveCachingWebView.framework */; };
 		BD63A7931E88B78600250536 /* NaiveCachingWebViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD63A7921E88B78600250536 /* NaiveCachingWebViewTests.swift */; };
 		BD63A7951E88B78600250536 /* NaiveCachingWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = BD63A7871E88B78600250536 /* NaiveCachingWebView.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -41,7 +41,7 @@
 		BD029BC31E97186000926490 /* CacheOperationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheOperationTests.swift; sourceTree = "<group>"; };
 		BD029BC51E971E8000926490 /* CacheInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheInfo.swift; sourceTree = "<group>"; };
 		BD029BC71E97218700926490 /* CacheInfoTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheInfoTests.swift; sourceTree = "<group>"; };
-		BD2AF6F91E936EDB000FC209 /* CacheOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheOperation.swift; sourceTree = "<group>"; };
+		BD2AF6F91E936EDB000FC209 /* CachingOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CachingOperation.swift; sourceTree = "<group>"; };
 		BD63A7841E88B78600250536 /* NaiveCachingWebView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NaiveCachingWebView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD63A7871E88B78600250536 /* NaiveCachingWebView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NaiveCachingWebView.h; sourceTree = "<group>"; };
 		BD63A7881E88B78600250536 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -106,7 +106,7 @@
 			children = (
 				BD63A7871E88B78600250536 /* NaiveCachingWebView.h */,
 				BD63A7A71E88C0D600250536 /* WKWebView+NaiveCachingWebView.swift */,
-				BD2AF6F91E936EDB000FC209 /* CacheOperation.swift */,
+				BD2AF6F91E936EDB000FC209 /* CachingOperation.swift */,
 				BD8FC54F1E9B46DF00E8FC86 /* HTMLProcessors.swift */,
 				BD029BC51E971E8000926490 /* CacheInfo.swift */,
 				BD63A7A81E88C0D600250536 /* WKWebView+ScriptHandler.swift */,
@@ -278,7 +278,7 @@
 				BD8FC5501E9B46DF00E8FC86 /* HTMLProcessors.swift in Sources */,
 				BD63A7AB1E88C0D600250536 /* WKWebView+ScriptHandler.swift in Sources */,
 				BD029BC61E971E8000926490 /* CacheInfo.swift in Sources */,
-				BD2AF6FA1E936EDB000FC209 /* CacheOperation.swift in Sources */,
+				BD2AF6FA1E936EDB000FC209 /* CachingOperation.swift in Sources */,
 				BD63A7B11E88C37C00250536 /* URL+Extension.swift in Sources */,
 				BD63A7B51E88C3B400250536 /* String+NSRange.swift in Sources */,
 				BD63A7AC1E88C0D600250536 /* WKUserContentController+RemoveUserScript.swift in Sources */,

@@ -1,5 +1,5 @@
 //
-//  CacheOperation.swift
+//  CachingOperation.swift
 //  NaiveCachingWebView
 //
 //  Created by guoc on 4/4/17.
@@ -9,7 +9,7 @@
 import Foundation
 import WebKit
 
-class CacheOperation: Operation {
+class CachingOperation: Operation {
 
     private var _executing = false
     private var _finished = false
