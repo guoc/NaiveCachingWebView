@@ -51,13 +51,15 @@ public extension WKWebView {
             print("No cache found.")
         }
 
-        let requestIgnoringCache: URLRequest = {
-            var request = request
-            request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
-            return request
-        }()
-        print("Request ignoring local cache data.")
-        let navigation = load(requestIgnoringCache)
+        print("Request ignoring existing cache.")
+        let navigation: WKNavigation?
+        if self.url != nil {
+            print("WKWebView's url property is not nil, reloadFromOrigin() is called.")
+            navigation = reloadFromOrigin()
+        } else {
+            print("WKWebView's url property is nil, load() with request.")
+            navigation = load(request)
+        }
 
         if options.contains(.rebuildCache) {
             print("CachingOptions.rebuildCache is applied.")
